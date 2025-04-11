@@ -70,7 +70,7 @@ return [
     |
      */
 
-    'url' => $app_url,
+    'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => $asset_url,
 

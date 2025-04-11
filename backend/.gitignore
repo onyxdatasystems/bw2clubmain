@@ -8,6 +8,7 @@ Thumbs.db
 /bower_components
 .env
 .env.backup
+.idea
 /.idea
 /.vscode
 /.vagrant

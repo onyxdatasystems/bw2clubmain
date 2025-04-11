@@ -66,9 +66,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
-
-require 'vendor/autoload.php'; // Include Composer's autoloader
-
 use Carbon\Carbon; // Import Carbon for date comparisons
 
 class ApiController extends Controller
@@ -142,7 +139,8 @@ class ApiController extends Controller
         $rules = array(
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()]
+           // 'password' => ['required', 'confirmed', Rules\Password::defaults()]
+            'password' => ['required']
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -164,46 +162,15 @@ class ApiController extends Controller
         ]);
         if ($user) {
             $response['success'] = true;
-            $response['message'] = 'user create successfully';
+            $response['message'] = 'user created successfully';
         }
         event(new Registered($user));
 
         return $response;
 
-        //    $user_id = auth('sanctum')->user();
-        // $user = User::find($user_id);
-        // $user = User::first();
-        // if ($user->email != $request->email) {
-        //     $usercreate = User::create([
-        //         'user_role' => 'general',
-        //         'username' => rand(100000, 999999),
-        //         'name' => $request->name,
-        //         'email' => $request->email,
-        //         'friends' => json_encode(array()),
-        //         'followers' => json_encode(array()),
-        //         'timezone' => $request->timezone,
-        //         'password' => Hash::make($request->password),
-        //         'status' => 0,
-        //         'lastActive' => Carbon::now(),
-        //         'created_at' => time(),
-        //     ]);
-        //     if ($usercreate) {
-        //         $response['success'] = true;
-        //         $response['message'] = 'user create successfully';
-        //     }
-        // } else {
-        //     $response['success'] = false;
-        //     $response['message'] = 'This user email is use before';
-        // }
-
-        // event(new Registered($user));
-
-        // Auth::login($user);
-
-        // return redirect(RouteServiceProvider::HOME);
     }
 
-    public function forgot_password(Request $request)
+    public function forgot_password(Request $request): array
     {
         $response = array();
 
