@@ -38,7 +38,31 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->configureRateLimiting();
+        parent::boot();
+
+        $this->routes(function () {
+            // Load web routes
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
+
+            // Dynamically load all API routes with version prefixes
+            $apiBasePath = base_path('routes/api');
+
+            foreach (scandir($apiBasePath) as $version) {
+                if ($version === '.' || $version === '..') continue;
+
+                $versionPath = $apiBasePath . '/' . $version;
+
+                if (is_dir($versionPath)) {
+                    foreach (glob("{$versionPath}/*.php") as $routeFile) {
+                        Route::prefix("api/{$version}")
+                            ->middleware('api')
+                            ->group($routeFile);
+                    }
+                }
+            }
+        });
+        /*$this->configureRateLimiting();
 
         $this->routes(function () {
             Route::prefix('api')
@@ -74,7 +98,7 @@ class RouteServiceProvider extends ServiceProvider
                 }
             }
 
-        });
+        });*/
     }
 
     /**
