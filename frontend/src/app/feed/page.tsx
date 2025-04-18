@@ -1,72 +1,66 @@
 "use client";
-import { useState } from "react";
-import Navbar from "../Navbar/page";
-import SideBar from "../SideBar/page";
-import PostComposeBar from "./PostComposeBar";
-import FeedPost from "./FeedPost";
-import AdsSection from "./AdsSection";
-import Image from "next/image";
+import React, { useEffect, useState, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import { apiService } from '../services/ApiService';
+import FeedPost from './FeedPost';
+import PostComposeBar from './PostComposeBar';
+import { Post } from '../types/post';
+
+const DynamicSideBar = dynamic(() => import('../SideBar/page'), { ssr: false });
+const DynamicAdsSection = dynamic(() => import('./AdsSection'), { ssr: false });
 
 const HomePage: React.FC = () => {
-  const [isSideNavVisible, setSideNavVisible] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const toggleSideNav = () => {
-    setSideNavVisible(!isSideNavVisible);
+  const loadPosts = useCallback(async () => {
+    try {
+      const newPosts = await apiService.loadMorePosts(page);
+      setPosts(prev => [...prev, ...newPosts]);
+      setHasMore(newPosts.length > 0);
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
+
+  const handleCreatePost = async (content: string, mediaFiles: File[]) => {
+    try {
+      const newPost = await apiService.createPost(content, mediaFiles);
+      setPosts(prev => [newPost, ...prev]);
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
   };
 
   return (
-    <div className="flex flex-col w-full h-screen bg-gray-100">
-      {/* Navbar */}
-      <Navbar />
+    <div className="flex min-h-screen">
+      <DynamicSideBar />
 
-      {/* Mobile Sidebar Toggle Button */}
-      <button
-        className="md:hidden fixed top-20 left-4 z-50 p-2 bg-white rounded-full shadow-lg"
-        onClick={toggleSideNav}
-      >
-        <Image
-          src={
-            isSideNavVisible
-              ? "https://dashboard.codeparrot.ai/api/image/Z-0CIgz4-w8v6R93/close-icon.png"
-              : "https://dashboard.codeparrot.ai/api/image/Z-0CIgz4-w8v6R93/menu-icon.png"
-          }
-          alt="Toggle Sidebar"
-          width={24}
-          height={24}
-        />
-      </button>
+      <main className="flex-1 p-4 max-w-2xl mx-auto">
+        <PostComposeBar onCreatePost={handleCreatePost} />
+        
+        {posts.map(post => (
+          <FeedPost key={post.id} post={post} onUpdate={loadPosts} />
+        ))}
 
-      {/* Main Layout */}
-      <div className="flex flex-grow p-5 gap-5">
-        {/* Sidebar - Hidden on Mobile */}
-        <div className={`fixed md:relative z-50 ${isSideNavVisible ? "block" : "hidden md:block"} w-64`}>
-          <SideBar />
-        </div>
+        {hasMore && (
+          <button 
+            onClick={() => setPage(prev => prev + 1)}
+            className="w-full py-2 bg-gray-100 rounded hover:bg-gray-200"
+          >
+            Load More
+          </button>
+        )}
+      </main>
 
-        {/* Main Content */}
-        <div className="flex flex-col flex-grow gap-5">
-          <PostComposeBar />
-          <FeedPost
-            userName="John Doe"
-            timeAgo="30 min"
-            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non."
-            imageUrl="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/image1.png"
-            avatarUrl="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/avatar1.png"
-          />
-          <FeedPost
-            userName="Jane Doe"
-            timeAgo="1 hr"
-            content="Consectetur adipiscing elit. Vivamus in mi quis augue rhoncus euismod id ac neque."
-            imageUrl="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/image2.png"
-            avatarUrl="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/avatar2.png"
-          />
-        </div>
-
-        {/* Ads Section (Hidden on Small Screens) */}
-        <div className="hidden lg:block w-1/4">
-          <AdsSection />
-        </div>
-      </div>
+      <aside className="hidden lg:block w-64 p-4">
+        <DynamicAdsSection />
+      </aside>
     </div>
   );
 };

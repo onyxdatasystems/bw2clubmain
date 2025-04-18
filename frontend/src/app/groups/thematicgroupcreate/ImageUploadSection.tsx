@@ -1,21 +1,38 @@
 import React from 'react';
 import Image from 'next/image';
 
-const ImageUploadSection: React.FC = () => {
-  const handleUploadClick = () => {
-    // Handle file upload logic here
+interface ImageUploadSectionProps {
+  onUpload: (file: File) => void;
+}
+
+const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({ onUpload }) => {
+  const handleUploadClick = async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        // Handle the file upload
-        console.log('File selected:', file);
+        const formData = new FormData();
+        formData.append('image', file);
+        try {
+          const response = await fetch('https://bw2club.onyxdatasystems.com/backend/api/v1/album/add/image', {
+            method: 'POST',
+            body: formData,
+          });
+          const data = await response.json();
+          if (response.ok) {
+            console.log('Image uploaded:', data);
+            // Handle successful upload (store image URL/ID in state)
+          }
+        } catch (error) {
+          console.error('Upload error:', error);
+        }
       }
     };
     input.click();
-  };
+  
+};
 
   return (
     <div className="relative w-full max-w-[432px] h-[273px] rounded-lg overflow-hidden">

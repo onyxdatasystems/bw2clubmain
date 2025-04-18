@@ -1,6 +1,6 @@
 import React from 'react';
-import SideNav from '../SideNav';
-import Navbar from '../Navbar';
+import Navbar from "../../Navbar/page";
+import SideBar from "../../SideBar/page";
 import GroupProfile from './GroupProfile';
 import PostInput from './PostInput';
 import Image from "next/image"
@@ -11,10 +11,10 @@ const Layout: React.FC = () => {
       <Navbar />
       <div className="flex flex-row w-full h-full">
         <div className="flex-none w-1/5 bg-[#fff2f9]">
-          <SideNav />
+          <SideBar />
         </div>
         <div className="flex-grow w-4/5 p-6">
-          <GroupProfile />
+          <GroupProfile groupId="example-group-id" />
           <PostInput />
           <div className="bg-white rounded-lg shadow-md p-4 text-center">
             <Image

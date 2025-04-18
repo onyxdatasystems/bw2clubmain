@@ -1,4 +1,4 @@
-// src/components/core/BaseComponent.tsx
+
 'use client';
 
 import React from 'react';

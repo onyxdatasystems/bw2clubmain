@@ -23,18 +23,24 @@ const CreateThematicGroup: React.FC = () => {
       <div className="flex flex-row p-4 space-x-4">
         {/* Text Input Sections */}
         <div className="flex flex-col flex-grow space-y-4">
-          <TextInputSection />
+          <TextInputSection 
+            initialValues={{ title: '', about: '', interests: '', language: '' }} 
+            onTextChange={(newText) => console.log(newText)} 
+          />
         </div>
 
         {/* Image Upload Section */}
         <div className="flex flex-col flex-grow">
-          <ImageUploadSection />
+          <ImageUploadSection onUpload={(file) => console.log('File uploaded:', file)} />
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex justify-end p-4 border-t border-gray-200">
-        <ActionButtons />
+        <ActionButtons 
+          onSave={() => console.log('Save action triggered')} 
+          onCancel={() => console.log('Cancel action triggered')} 
+        />
       </div>
     </div>
   );

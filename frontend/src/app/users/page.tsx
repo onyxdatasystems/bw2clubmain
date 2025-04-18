@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "./Navbar";
-import {SideNav} from "./SideNav"; 
+import Navbar from "../Navbar/page";
+import SideBar from "../SideBar/page"; 
 import ProfileSection from "./ProfileSection";
 import Post_ComposeBar from "./Post_ComposeBar";
 import Image from "next/image";
@@ -66,7 +66,7 @@ const Layout: React.FC = () => {
                 exit={{ x: -300 }}
                 transition={{ type: "spring", damping: 20 }}
               >
-                <SideNav />
+                <SideBar />
               </motion.div>
             </>
           )}

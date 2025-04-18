@@ -1,7 +1,7 @@
 "use client";
 import { motion } from 'framer-motion';
-import Navbar from './Navbar';
-import SideNav from './SideNav';
+import Navbar from '../Navbar/page';
+import SideBar from '../SideBar/page';
 import UserProfile from './UserProfile';
 import ProfileTabs from './ProfileTabs';
 import ProfileDetails from './ProfileDetails';
@@ -24,7 +24,7 @@ const HomePage = () => {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         {/* Side Navigation - Hidden on mobile by default */}
-        <SideNav className="hidden md:flex w-full md:w-[278px]" />
+        <SideBar className="hidden md:flex w-full md:w-[278px]" />
         
         {/* Main Content */}
         <div className="flex flex-col flex-1 gap-5">

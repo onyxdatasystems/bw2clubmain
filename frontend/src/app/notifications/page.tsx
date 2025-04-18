@@ -1,16 +1,22 @@
-
+// Update the Layout component to handle authentication
 'use client';
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../Navbar/page';
-import  SideBar from '../SideBar/page';
+import SideBar from '../SideBar/page';
 import { GetInvolvedSection } from './GetInvolvedSection';
 import { NotificationList } from './NotificationList';
 import { BrandAmbassadors } from './BrandAmbassadors';
 import { PartnersSection } from './PartnersSection';
+import { redirect } from 'next/navigation';
 
 export default class Layout extends React.Component {
+  componentDidMount() {
+    if (typeof window !== 'undefined' && !localStorage.getItem('token')) {
+      redirect('/login');
+    }
+  }
+
   render() {
     return (
       <motion.div 

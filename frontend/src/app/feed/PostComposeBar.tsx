@@ -1,140 +1,97 @@
-import React from 'react';
+
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 
-const PostComposeBar: React.FC = () => {
+interface PostComposeBarProps {
+  onCreatePost: (content: string, mediaFiles: File[]) => void;
+}
+
+const PostComposeBar: React.FC<PostComposeBarProps> = ({ onCreatePost }) => {
+  const [content, setContent] = useState('');
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [mediaPreviews, setMediaPreviews] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setMediaFiles(prev => [...prev, ...files]);
+    
+    // Generate preview URLs
+    const previews = files.map(file => URL.createObjectURL(file));
+    setMediaPreviews(prev => [...prev, ...previews]);
+  };
+
+  const removeMedia = (index: number) => {
+    setMediaFiles(prev => prev.filter((_, i) => i !== index));
+    setMediaPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (content.trim() || mediaFiles.length > 0) {
+      await onCreatePost(content, mediaFiles);
+      setContent('');
+      setMediaFiles([]);
+      setMediaPreviews([]);
+    }
+  };
+
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '546px',
-      padding: '16px',
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      boxSizing: 'border-box'
-    }}>
-      <div style={{
-        flex: 1,
-        padding: '16px 16px 16px 12px',
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '12px',
-        background: '#ffffff',
-        borderRadius: '8px',
-        border: '1px solid #ebecef',
-        boxSizing: 'border-box'
-      }}>
-        <div style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '72px',
-          background: '#fa53f7',
-          position: 'relative'
-        }}>
-          <Image
-            src="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/asset-2.png"
-            alt="Avatar"
-            fill
-            style={{ borderRadius: '72px' }}
-          />
-        </div>
+    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="What's going on?"
+        className="w-full p-2 border rounded mb-4 h-24"
+      />
 
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          flex: 1
-        }}>
-          <div style={{
-            padding: '14px 12px',
-            background: '#ffffff',
-            borderRadius: '4px',
-            border: '1px solid #ebecef',
-            boxSizing: 'border-box'
-          }}>
-            <input
-              type="text"
-              placeholder="What's going on..."
-              style={{
-                width: '100%',
-                border: 'none',
-                outline: 'none',
-                fontFamily: 'Inter',
-                fontSize: '14px',
-                letterSpacing: '-0.41px',
-                lineHeight: '140%',
-                color: '#898e9e'
-              }}
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {mediaPreviews.map((preview, index) => (
+          <div key={index} className="relative aspect-square">
+            <Image
+              src={preview}
+              alt="Media preview"
+              fill
+              className="object-cover rounded"
             />
-          </div>
-
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: '8px'
-            }}>
-              <AttachmentButton icon="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/image-2.png" />
-              <AttachmentButton icon="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/play-circ-2.png" />
-              <AttachmentButton icon="https://dashboard.codeparrot.ai/api/image/Z-0LOgz4-w8v6R-X/papercli-2.png" />
-            </div>
-
-            <button style={{
-              padding: '4px 12px',
-              background: 'linear-gradient(180deg, rgba(133,133,213,1) 0%, rgba(103,103,183,1) 100%)',
-              borderRadius: '100px',
-              border: 'none',
-              color: '#ffffff',
-              fontFamily: 'Inter',
-              fontSize: '14px',
-              lineHeight: '20px',
-              cursor: 'pointer'
-            }}>
-              Post
+            <button
+              onClick={() => removeMedia(index)}
+              className="absolute top-1 right-1 bg-white rounded-full p-1 shadow"
+            >
+              ×
             </button>
           </div>
-        </div>
+        ))}
       </div>
-    </div>
-  );
-};
 
-const AttachmentButton: React.FC<{icon: string}> = ({icon}) => {
-  return (
-    <div style={{
-      width: '32px',
-      height: '32px',
-      position: 'relative',
-      cursor: 'pointer'
-    }}>
-      <div style={{
-        width: '32px',
-        height: '32px',
-        borderRadius: '50%',
-        background: '#ebecef',
-        opacity: 0.6
-      }} />
-      <div style={{
-        position: 'absolute',
-        top: '4px',
-        left: '4px',
-        width: '24px',
-        height: '24px'
-      }}>
-        <Image
-          src={icon}
-          alt="Attachment"
-          width={24}
-          height={24}
-        />
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
+            accept="image/*,video/*"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="p-2 hover:bg-gray-100 rounded"
+          >
+            📎
+          </button>
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+          disabled={!content.trim() && mediaFiles.length === 0}
+        >
+          Post
+        </button>
       </div>
     </div>
   );
 };
 
 export default PostComposeBar;
-

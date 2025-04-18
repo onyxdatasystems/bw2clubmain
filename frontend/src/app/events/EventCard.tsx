@@ -1,38 +1,45 @@
+// EventCard.tsx
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface EventCardProps {
-  imageUrl?: string;
-  title?: string;
-  date?: string;
-  time?: string;
-  description?: string;
-  avatarUrl?: string;
+  id: string;
+  imageUrl: string;
+  title: string;
+  date: string;
+  time: string;
+  description: string;
+  avatarUrl: string;
+  status?: 'going' | 'notgoing' | 'interested' | 'notinterested';
+  onAction: (action: string, id: string) => void;
 }
 
 const EventCard: React.FC<EventCardProps> = ({
-  imageUrl = 'https://dashboard.codeparrot.ai/api/image/Z-0BCwz4-w8v6R90/rectangl.png',
-  title = 'Empowering Hope: Brea...',
-  date = '24th July, 2025',
-  time = '10AM CAT',
-  description = 'About event. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proine...',
-  avatarUrl = 'https://dashboard.codeparrot.ai/api/image/Z-0BCwz4-w8v6R90/ellipse.png'
+  id,
+  imageUrl,
+  title,
+  date,
+  time,
+  description,
+  avatarUrl,
+  status,
+  onAction
 }) => {
   return (
     <div className="w-full max-w-xs bg-white rounded-lg overflow-hidden shadow-md">
-      {/* Top Image */}
-      <div className="relative h-48 w-full">
-        <Image
-          src={imageUrl}
-          alt="Event"
-          fill
-          className="object-cover"
-        />
-      </div>
+      <Link href={`https://bw2club.onyxdatasystems.com/backend/api/v1/events_details/${id}`}>
+        <div className="relative h-48 w-full cursor-pointer">
+          <Image
+            src={imageUrl}
+            alt="Event"
+            fill
+            className="object-cover"
+          />
+        </div>
+      </Link>
 
-      {/* Content Container */}
       <div className="relative px-4 pt-8 pb-4 border border-[#e5e5e5]">
-        {/* Avatar */}
         <div className="absolute -top-5 left-4">
           <Image
             src={avatarUrl}
@@ -43,7 +50,6 @@ const EventCard: React.FC<EventCardProps> = ({
           />
         </div>
 
-        {/* Date and Time */}
         <div className="flex flex-row gap-6 mb-5">
           <div className="flex items-center gap-2">
             <Image
@@ -65,7 +71,6 @@ const EventCard: React.FC<EventCardProps> = ({
           </div>
         </div>
 
-        {/* Title and Description */}
         <div className="flex flex-col gap-2">
           <h3 className="text-base font-medium text-[#7171C1] tracking-[-0.5px] leading-[140%]">
             {title}
@@ -74,10 +79,52 @@ const EventCard: React.FC<EventCardProps> = ({
             {description}
           </p>
         </div>
+
+        <div className="flex flex-wrap gap-2 mt-4">
+          <button
+            onClick={() => onAction('https://bw2club.onyxdatasystems.com/backend/api/v1/event_going', id)}
+            className={`px-3 py-1 text-xs rounded-full ${
+              status === 'going' 
+                ? 'bg-green-500 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            Going
+          </button>
+          <button
+            onClick={() => onAction('https://bw2club.onyxdatasystems.com/backend/api/v1/event_notgoing', id)}
+            className={`px-3 py-1 text-xs rounded-full ${
+              status === 'notgoing' 
+                ? 'bg-red-500 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            Not Going
+          </button>
+          <button
+            onClick={() => onAction('https://bw2club.onyxdatasystems.com/backend/api/v1/event_interested', id)}
+            className={`px-3 py-1 text-xs rounded-full ${
+              status === 'interested' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            Interested
+          </button>
+          <button
+            onClick={() => onAction('https://bw2club.onyxdatasystems.com/backend/api/v1/event_notinterested', id)}
+            className={`px-3 py-1 text-xs rounded-full ${
+              status === 'notinterested' 
+                ? 'bg-yellow-500 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            Not Interested
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default EventCard;
-

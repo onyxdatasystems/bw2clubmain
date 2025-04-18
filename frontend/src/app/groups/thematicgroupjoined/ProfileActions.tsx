@@ -1,61 +1,76 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface ProfileActionsProps {
-  userName?: string;
-  userAvatar?: string;
-  isVerified?: boolean;
-  requestStatus?: 'pending' | 'approved' | 'rejected';
+  groupId: string;
+  userId: string;
 }
 
-const ProfileActions: React.FC<ProfileActionsProps> = ({
-  userName = 'Alfredo Donin',
-  userAvatar = 'https://dashboard.codeparrot.ai/api/image/Z-zvcwz4-w8v6R9U/avatar.png',
-  isVerified = true,
-  requestStatus = 'pending'
-}) => {
+const ProfileActions: React.FC<ProfileActionsProps> = ({ groupId, userId }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [friends, setFriends] = useState<any[]>([]);
+
+  const searchFriends = async (query: string) => {
+    try {
+      const response = await fetch(`https://bw2club.onyxdatasystems.com/backend/api/v1/search_friends_for_inviting?q=${query}`);
+      const data = await response.json();
+      setFriends(data.results);
+    } catch (error) {
+      console.error('Friend search failed:', error);
+    }
+  };
+
+  const sendInvite = async (friendId: string) => {
+    try {
+      await fetch('https://bw2club.onyxdatasystems.com/backend/api/v1/group/invites/sent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ groupId, userId, friendId })
+      });
+    } catch (error) {
+      console.error('Invite failed:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col w-full min-w-[548px] p-4 bg-white">
-      <button 
-        className="w-full max-w-[516px] h-[40px] px-4 py-2 rounded-full border border-purple-500 text-purple-500 
-        hover:bg-purple-50 transition-colors duration-200 font-medium text-sm tracking-tight"
-      >
-        Request Pending
-      </button>
-      
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="relative w-10 h-10">
-            <Image
-              src={userAvatar}
-              alt={userName}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-          </div>
-          <span className="ml-2 text-[14px] text-[#292B32] tracking-tight">{userName}</span>
-        </div>
-        {isVerified && (
-          <div className="flex gap-2">
-            <Image
-              src="https://dashboard.codeparrot.ai/api/image/Z-zvcwz4-w8v6R9U/tick-cir.png"
-              alt="Verified"
-              width={21}
-              height={21}
-            />
-            <Image
-              src="https://dashboard.codeparrot.ai/api/image/Z-zvcwz4-w8v6R9U/frame-48.png"
-              alt="Frame"
-              width={22}
-              height={22}
-            />
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search friends to invite..."
+          className="w-full p-2 border rounded"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            if (e.target.value.length > 2) searchFriends(e.target.value);
+          }}
+        />
+        
+        {friends.length > 0 && (
+          <div className="absolute z-10 w-full mt-1 bg-white border rounded shadow-lg">
+            {friends.map(friend => (
+              <div 
+                key={friend.id}
+                className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => sendInvite(friend.id)}
+              >
+                <Image
+                  src={friend.avatar}
+                  alt={friend.name}
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+                <span className="ml-2">{friend.name}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Existing profile action buttons */}
     </div>
   );
 };
 
 export default ProfileActions;
-

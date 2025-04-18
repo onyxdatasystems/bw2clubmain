@@ -1,20 +1,38 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import Navbar from '../Navbar/page'; // Adjusted the path to match the correct location
+import Navbar from '../Navbar/page';
 import SideBar from '../SideBar/page';
 import CreateThematicGroup from './ThematicGroupList';
+import GroupProfile from './thematicGroupCreated/GroupProfile'; 
 import ThematicGroupList from './ThematicGroupList';
 
 const Layout: React.FC = () => {
-  const [isSideNavVisible, setSideNavVisible] = useState(false);
+ 
+  const [isSideNavVisible, setIsSideNavVisible] = useState(false);
 
-  const toggleSideNav = () => setSideNavVisible(!isSideNavVisible);
+  const toggleSideNav = () => {
+    setIsSideNavVisible(!isSideNavVisible);
+  };
+  const [joinedGroups, setJoinedGroups] = useState([]);
+
+  useEffect(() => {
+    const fetchJoinedGroups = async () => {
+      const response = await fetch('https://bw2club.onyxdatasystems.com/backend/api/v1/group/user/joined');
+      const data = await response.json();
+      setJoinedGroups(data);
+    };
+    fetchJoinedGroups();
+  }, []);
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#f8f9fa] relative">
       <Navbar />
+      <GroupProfile groupId="example-group-id" />
+
+
+    
 
       {/* Toggle button for small devices */}
       <button

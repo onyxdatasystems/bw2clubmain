@@ -1,8 +1,9 @@
 import React from 'react';
 
 interface ActionButtonsProps {
-  onCancel?: () => void;
-  onSave?: () => void;
+  onSave: () => void;
+  onCancel: () => void;
+  disabled?: boolean; 
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ 
