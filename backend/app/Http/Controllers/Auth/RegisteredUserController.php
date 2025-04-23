@@ -40,11 +40,13 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+        $response = array();
         // return $request->all();
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            //'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            //'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required']
         ]);
 
         $user = User::create([
@@ -61,11 +63,14 @@ class RegisteredUserController extends Controller
             'created_at' => time()
         ]);
 
+        if ($user) {
+            $response['success'] = true;
+            $response['message'] = 'user created successfully';
+        }
 
         event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+        return $response;
+        //Auth::login($user);
+        //return redirect(RouteServiceProvider::HOME);
     }
 }

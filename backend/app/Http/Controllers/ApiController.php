@@ -120,7 +120,7 @@ class ApiController extends Controller
         }
 
     }
-    public function signup(Request $request)
+   /* public function signup(Request $request)
     {
         // return $request->all();
         $response = array();
@@ -168,7 +168,7 @@ class ApiController extends Controller
 
         return $response;
 
-    }
+    }*/
 
     public function forgot_password(Request $request): array
     {

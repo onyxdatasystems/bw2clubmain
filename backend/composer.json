@@ -9,6 +9,7 @@
         "anandsiddharth/laravel-paytm-wallet": "^2.0",
         "firebase/php-jwt": "^6.4",
         "flutterwavedev/flutterwave-v3": "^1.0",
+        "fruitcake/laravel-cors": "*",
         "guzzlehttp/guzzle": "^7.5",
         "intervention/image": "^2.7",
         "jorenvanhocht/laravel-share": "^4.2",

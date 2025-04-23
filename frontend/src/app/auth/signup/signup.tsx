@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import {error} from "next/dist/build/output/log";
 
 // OOP Class for Animations
 class SignUpAnimations {
@@ -87,6 +88,7 @@ const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmed: '',
     username: '',
     fullName: ''
   });
@@ -117,10 +119,21 @@ const SignUp: React.FC = () => {
     setIsLoading(true);
     setErrorMessage('');
     
-    try {    console.log('Attempting to fetch:', 'https://bw2club.onyxdatasystems.com/backend/api/v1/register');
-      const response = await fetch('https://bw2club.onyxdatasystems.com/backend/api/v1/register', {
+    try {
+      console.log('Attempting to fetch:', formData.password);
+      if (formData.password !== formData.confirmed) {
+        setErrorMessage('The passwords do not match.');
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: JSON.stringify(formData),
       });
 
@@ -290,94 +303,119 @@ const SignUp: React.FC = () => {
                 Sign Up
               </motion.h1>
 
-              <motion.form 
-                onSubmit={handleSubmit} 
-                className="space-y-6"
-                variants={SignUpAnimations.container}
-                initial="hidden"
-                animate="visible"
+              <motion.form
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                  variants={SignUpAnimations.container}
+                  initial="hidden"
+                  animate="visible"
               >
                 {/* Form fields remain the same */}
                 <motion.div variants={SignUpAnimations.item}>
                   <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className={SignUpLayout.inputField}
-                    placeholder="Full Name"
-                    required
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      className={SignUpLayout.inputField}
+                      placeholder="Full Name"
+                      required
                   />
                 </motion.div>
 
                 <motion.div variants={SignUpAnimations.item}>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={SignUpLayout.inputField}
-                    placeholder="Email address"
-                    required
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={SignUpLayout.inputField}
+                      placeholder="Email address"
+                      required
                   />
                 </motion.div>
 
-                <motion.div variants={SignUpAnimations.item}>
+                {/* <motion.div variants={SignUpAnimations.item}>
                   <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    className={SignUpLayout.inputField}
-                    placeholder="Choose a username"
-                    required
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      className={SignUpLayout.inputField}
+                      placeholder="Choose a username"
+                      required
                   />
+                </motion.div> */}
+
+                <motion.div className="relative" variants={SignUpAnimations.item}>
+                  <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className={SignUpLayout.inputField}
+                      placeholder="Password"
+                      required
+                  />
+                  <motion.button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                      whileTap={{scale: 0.9}}
+                  >
+                    <Image
+                        src="https://dashboard.codeparrot.ai/api/image/Z-o9pwz4-w8v6Rqn/eye-1-6.png"
+                        alt="Toggle password"
+                        width={24}
+                        height={24}
+                    />
+                  </motion.button>
                 </motion.div>
 
                 <motion.div className="relative" variants={SignUpAnimations.item}>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={SignUpLayout.inputField}
-                    placeholder="Password"
-                    required
+                      type={showPassword ? "text" : "confirmed"}
+                      name="confirmed"
+                      value={formData.confirmed}
+                      onChange={handleChange}
+                      className={SignUpLayout.inputField}
+                      placeholder="Confirm Password"
+                      required
                   />
                   <motion.button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
-                    whileTap={{ scale: 0.9 }}
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                      whileTap={{scale: 0.9}}
                   >
                     <Image
-                      src="https://dashboard.codeparrot.ai/api/image/Z-o9pwz4-w8v6Rqn/eye-1-6.png"
-                      alt="Toggle password"
-                      width={24}
-                      height={24}
+                        src="https://dashboard.codeparrot.ai/api/image/Z-o9pwz4-w8v6Rqn/eye-1-6.png"
+                        alt="Toggle password"
+                        width={24}
+                        height={24}
                     />
                   </motion.button>
                 </motion.div>
 
                 <motion.div variants={SignUpAnimations.item}>
                   <motion.button
-                    type="submit"
-                    disabled={isLoading}
-                    className={SignUpLayout.submitButton}
-                    whileHover={SignUpAnimations.buttonHover}
-                    whileTap={SignUpAnimations.buttonTap}
+                      type="submit"
+                      disabled={isLoading}
+                      className={SignUpLayout.submitButton}
+                      whileHover={SignUpAnimations.buttonHover}
+                      whileTap={SignUpAnimations.buttonTap}
                   >
                     {isLoading ? (
-                      <span className="flex items-center justify-center">
+                        <span className="flex items-center justify-center">
                         <motion.span
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"
+                            animate={{rotate: 360}}
+                            transition={{duration: 1, repeat: Infinity, ease: "linear"}}
+                            className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"
                         />
                         Creating account...
                       </span>
                     ) : (
-                      'Sign Up'
+                        'Sign Up'
                     )}
                   </motion.button>
                 </motion.div>
@@ -386,30 +424,30 @@ const SignUp: React.FC = () => {
           )}
 
           {step === 'confirm' && (
-            <motion.div
-              key="confirm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="w-full max-w-[424px] text-center"
-            >
-              <motion.h1 className="text-4xl md:text-5xl font-bold text-[#6767b7] mb-8 md:mb-12">
-                {isLoading ? 'Verifying Email...' : 'Confirm Email'}
-              </motion.h1>
+              <motion.div
+                  key="confirm"
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                  exit={{opacity: 0}}
+                  className="w-full max-w-[424px] text-center"
+              >
+                <motion.h1 className="text-4xl md:text-5xl font-bold text-[#6767b7] mb-8 md:mb-12">
+                  {isLoading ? 'Verifying Email...' : 'Confirm Email'}
+                </motion.h1>
 
-              {!isLoading && (
-                <motion.div className="space-y-6">
-                  <p className="text-gray-600 mb-6">
-                    {confirmationToken
-                      ? 'Verifying your email...'
-                      : `We've sent a confirmation link to ${formData.email}. Please check your inbox.`}
-                  </p>
+                {!isLoading && (
+                    <motion.div className="space-y-6">
+                      <p className="text-gray-600 mb-6">
+                        {confirmationToken
+                            ? 'Verifying your email...'
+                            : `We've sent a confirmation link to ${formData.email}. Please check your inbox.`}
+                      </p>
 
-                  {!confirmationToken && (
-                    <>
-                      <motion.button
-                        onClick={handleResendConfirmation}
-                        disabled={isLoading}
+                      {!confirmationToken && (
+                          <>
+                            <motion.button
+                                onClick={handleResendConfirmation}
+                                disabled={isLoading}
                         className={SignUpLayout.submitButton}
                         whileHover={SignUpAnimations.buttonHover}
                         whileTap={SignUpAnimations.buttonTap}

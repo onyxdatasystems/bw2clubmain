@@ -5,14 +5,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
-
-const API = {
-  LOGIN: 'https://bw2club.onyxdatasystems.com/backend/api/v1/login',
-  FORGOT_PASSWORD: 'https://bw2club.onyxdatasystems.com/backend/api/v1/forgot_password',
-  RESET_PASSWORD: 'https://bw2club.onyxdatasystems.com/backend/api/v1/reset_password',
-  UPDATE_PASSWORD: 'https://bw2club.onyxdatasystems.com/backend/api/v1/update_password'
-};
-
 // OOP Class for Animations
 class LoginAnimations {
   static container = {
@@ -70,7 +62,7 @@ class LoginLayout {
   static submitButton = "w-full h-[44px] bg-gradient-to-b from-[#8585d5] to-[#6767b7] text-white rounded-lg hover:opacity-90 disabled:opacity-70 font-medium tracking-wide";
 }
 
-const LoginSection_ImageSection: React.FC = () => {
+const Login: React.FC = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +77,7 @@ const LoginSection_ImageSection: React.FC = () => {
       if (!token) return;
 
       try {
-        const response = await fetch(API.LOGIN, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/login`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -111,12 +103,15 @@ const LoginSection_ImageSection: React.FC = () => {
     setLoginError('');
 
     try {
-      const response = await fetch(API.LOGIN, {
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
         method: 'POST',
+        credentials: 'include', // Required for cookies
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({email, password}),
       });
 
       const data = await response.json();
@@ -307,7 +302,7 @@ const LoginSection_ImageSection: React.FC = () => {
             variants={LoginAnimations.item}
           >
             <p className="text-[#7171c1] text-sm md:text-base">
-              Don't have an account?{' '}
+              Don&#39;t have an account?{' '}
               <Link href="/auth/signup" className="font-semibold hover:underline">
                 Sign up
               </Link>
@@ -326,4 +321,4 @@ const LoginSection_ImageSection: React.FC = () => {
   );
 };
 
-export default LoginSection_ImageSection;
+export default Login;
