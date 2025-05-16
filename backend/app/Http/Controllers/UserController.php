@@ -39,7 +39,7 @@ class UserController extends Controller
                     'name' => 'required|max:255|string',
                     'image' => ['required', 'mimes:jpg,jpeg,png'],
                 ]);
-
+echo '2222';exit();
                 $response['status'] = 1;
                 $response['user_id'] = auth()->user()->id;
                 $response['name'] = $request->name;
