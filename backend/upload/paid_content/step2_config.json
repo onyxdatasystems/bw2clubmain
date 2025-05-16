@@ -1,0 +1,18 @@
+{
+	"is_addon": "1",
+	"addons": [
+		{
+			"unique_identifier": "paid_content",
+			"title": "Paid Content",
+			"features": "Explore creators \n-Become creator \n-Create paid posts \n-Create package \n-Get paid \n-Payout option \n-Payment list \n-Manage request \n-Creator payment \n"
+		}
+	],
+	"addon_version": {
+		"minimum_required_version": "1.1",
+		"update_version": "1.2"
+	},
+	"product_version": {
+		"minimum_required_version": "2.0",
+		"update_version": "2.1"
+	}
+}
