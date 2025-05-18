@@ -11,7 +11,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\PaidContent;
+use App\Http\Controllers\PaidContentController;
 use App\Http\Controllers\PaymentHistory;
 use App\Http\Controllers\Report\SearchController;
 use App\Http\Controllers\SettingController;
@@ -487,7 +487,7 @@ Route::controller(PaymentHistory::class)->middleware('auth', 'verified', 'activi
 
 
 //  paid content
-Route::controller(PaidContent::class)->middleware('auth', 'verified', 'activity', 'prevent-back-history')->group(function () {
+Route::controller(PaidContentController::class)->middleware('auth', 'verified', 'activity', 'prevent-back-history')->group(function () {
     Route::get('/paid/content', 'paid_content')->name('paid.content');
     Route::get('/paid/content/general/timeline', 'general_timeline')->name('general.timeline');
 

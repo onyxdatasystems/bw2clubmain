@@ -13,10 +13,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 
-class PaidContent extends Controller
+class PaidContentController extends Controller
 {
     public $user;
     public $user_subscription;
+
+    function __construct(){
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth()->user();
+            return $next($request);
+        });
+    }
 
     // ======= common functions for paid content starts ======= //
 
@@ -167,6 +174,37 @@ class PaidContent extends Controller
         $page_data['subscription'] = $subscription;
         $page_data['type'] = 'user_post';
         return view('frontend.main_content.posts', $page_data);
+    }
+
+    public function createPackage(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'duration' => 'required|integer|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $package = PaidContentPackages::create([
+            'user_id' => $request->user()->id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'price' => $request->price,
+            'duration' => $request->duration
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $package,
+            'message' => 'Package created successfully'
+        ], 201);
     }
 
     public function subscription($id, Request $request)
@@ -424,28 +462,41 @@ class PaidContent extends Controller
 
     public function create_package(Request $request)
     {
-        if (PaidContentPackages::where('user_id', auth()->user()->id)->count() < 3) {
-            // get all data from request and remove 1st element
-            $data = $request->toArray();
-            $data = array_slice($data, 1);
-            $data['user_id'] = auth()->user()->id;
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'duration' => 'required|integer|min:1'
+        ]);
 
-            PaidContentPackages::insert($data);
-            Session::flash('success_message', 'Package added.');
-        } else {
-            Session::flash('success_message', 'Package full.');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
-        return redirect()->back();
-    }
 
-    public function edit_package($id)
-    {
-        $package = PaidContentPackages::where('id', $id)->first();
-        $page_data = [
-            'view_path' => 'frontend.paid_content.edit_package_modal',
-            'package' => $package,
-        ];
-        return view('frontend.paid_content.edit_package_modal', $page_data);
+        if (PaidContentPackages::where('user_id', auth()->user()->id)->count() < 3) {
+            $package = PaidContentPackages::create([
+                'user_id' => $request->user()->id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'price' => $request->price,
+                'duration' => $request->duration
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $package,
+                'message' => 'Package created successfully'
+            ], 201);
+
+        } else {
+            return response()->json([
+                'success' => false,
+                'errors' => "Package is full."
+            ], 422);
+        }
     }
 
     public function update_package(Request $request, $id)
@@ -462,19 +513,23 @@ class PaidContent extends Controller
     public function delete_package($id)
     {
         PaidContentPackages::where('id', $id)->delete($id);
-        Session::flash('success_message', 'Package deleted.');
-        return redirect()->back();
+        return response()->json([
+            'success' => true,
+            'message' => 'Package deleted.'
+        ]);
     }
 
     public function settings()
     {
         // creator information
-        $info = PaidContentCreator::where('user_id', auth()->user()->id)->first();
-        $page_data = [
-            'view_path' => 'frontend.paid_content.settings',
-            'info' => $info,
-        ];
-        return view('frontend.index', $page_data);
+        $creator = PaidContentCreator::findOrFail($this->user->id);
+        return response()->json([
+            'success' => true,
+            'data' => $creator,
+            'message' => 'Creator info gotten.'
+        ]);
+
+
     }
 
     public function update_settings(Request $request, $id)
@@ -631,40 +686,52 @@ class PaidContent extends Controller
             ->select('paid_content_creators.*', 'users.name', 'users.email', )
             ->first();
 
-        $page_data = [
-            'review' => $review,
-            'view_path' => 'paid_content.review_request',
-        ];
-        return view('backend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $review,
+            'message' => 'Review report.'
+        ], 201);
     }
 
     public function payout_report()
     {
         $success_reports = PaidContentPayout::where('status', 1)->latest()->paginate(10);
-        $page_data = [
-            'type' => 'success',
-            'reports' => $success_reports,
-            'view_path' => 'paid_content.author_payout',
-        ];
-        return view('backend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $success_reports,
+            'message' => 'Payout report.'
+        ], 201);
     }
 
     public function pending_report()
     {
         $pending_reports = PaidContentPayout::where('status', 0)->latest()->paginate(10);
-        $page_data = [
+        $response = [
             'type' => 'pending',
             'reports' => $pending_reports,
             'view_path' => 'paid_content.author_payout',
         ];
-        return view('backend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+        ], 201);
     }
 
     public function delete_payout($id)
     {
-        PaidContentPayout::find($id)->delete();
-        flash()->addSuccess('Payout request deleted.');
-        return redirect()->back();
+        $is_creator = PaidContentPayout::find($id)->delete();
+        if ($is_creator) {
+            PaidContentPayout::find($id)->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Payout request deleted.'
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payout request not deleted.'
+            ], 422);
+        }
     }
 
     public function author_payout($id)
@@ -770,33 +837,70 @@ class PaidContent extends Controller
     {
         $is_creator = $this->check_creator(auth()->user()->id);
         if ($is_creator) {
+            $validator = Validator::make($request->all(), [
+                'amount' => 'required|numeric|min:1',
+                'payment_method' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
             $old_request = PaidContentPayout::where('user_id', auth()->user()->id)
                 ->where('status', 0)->latest('id');
 
             if ($old_request->exists()) {
                 $request_id = $old_request->first();
                 session(['request_id' => $request_id]);
-                Session::flash('success_message', 'Another request pending.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Another request pending..'
+                ], 422);
             } else {
-                $main_balance = session('main_balance');
-                Session::forget('main_balance');
+                $balance = PaidContentSubscription::where('creator_id', auth()->user()->id)
+                    ->join('paid_content_packages', 'paid_content_subscriptions.package_id', '=', 'paid_content_packages.id')
+                    ->select('paid_content_subscriptions.id', 'paid_content_subscriptions.creator_id', 'paid_content_subscriptions.admin_commission', 'paid_content_packages.price')
+                    ->orderBy('paid_content_subscriptions.id', 'DESC')->get();
+
+                foreach ($balance as $item) {
+                    $item->price = $item->price - ($item->price * ($item->admin_commission / 100));
+                }
+
+                $total_payout = PaidContentPayout::where('user_id', auth()->user()->id)
+                    ->where('status', 1)->sum('requested_amount');
+
+                $main_balance = $balance->sum('price') - $total_payout;
 
                 if ($request->requested_amount > $main_balance || $request->requested_amount < 2) {
-                    Session::flash('success_message', 'Not enough balance.');
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Not enough balance.'
+                    ], 422);
                 } else {
-                    $data = [
-                        'user_id' => auth()->user()->id,
+                    $payout = PaidContentPayout::create([
+                        'user_id' => $this->user()->id,
                         'requested_amount' => $request->requested_amount,
-                        'issue_date' => date('Y-m-d H:i:s')
-                    ];
-                    PaidContentPayout::where('user_id', auth()->user()->id)->insert($data);
-                    Session::flash('success_message', 'Request submitted.');
+                        'payment_method' => $request->payment_method,
+                        'issue_date' => date('Y-m-d H:i:s'),
+                        'status' => 'pending'
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'data' => $payout,
+                        'message' => 'Payout request submitted'
+                    ], 201);
                 }
             }
             return redirect()->back();
         } else {
-            Session::flash('success_message', 'Not a creator.');
-            return redirect()->route('addon.manager');
+            return response()->json([
+                'success' => false,
+                'message' => 'Not a creator.'
+            ], 422);
         }
     }
 
@@ -805,11 +909,15 @@ class PaidContent extends Controller
         $is_creator = $this->check_creator(auth()->user()->id);
         if ($is_creator) {
             PaidContentPayout::find($id)->delete();
-            Session::flash('success_message', 'Request canceled.');
-            return redirect()->back();
+            return response()->json([
+                'success' => true,
+                'message' => 'Request canceled.'
+            ], 201);
         } else {
-            Session::flash('success_message', 'Not a creator.');
-            return redirect()->route('addon.manager');
+            return response()->json([
+                'success' => false,
+                'message' => 'Not a creator.'
+            ], 422);
         }
     }
 
