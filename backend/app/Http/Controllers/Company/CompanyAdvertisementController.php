@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Company;
 
-use App\Models\CompanyAdvertisement; // Changed
 use App\Http\Controllers\Controller;
+use App\Models\Company\CompanyAdvertisement;
 use Illuminate\Http\Request;
+
+// Changed
 
 class CompanyAdvertisementController extends Controller // Changed
 {

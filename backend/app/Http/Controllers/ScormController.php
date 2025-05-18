@@ -1,9 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Course;
+use App\Models\Training\Course;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ScormController extends Controller
 {

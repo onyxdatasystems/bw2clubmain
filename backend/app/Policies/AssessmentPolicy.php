@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Assessment;
-use App\Models\Course;
+use App\Models\Training\Assessment;
+use App\Models\Training\Course;
 use App\Models\User;
 
 class AssessmentPolicy

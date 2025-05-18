@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Company;
 
 use DB;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
 
 class CompanySubscriptionPlan extends Model
 {

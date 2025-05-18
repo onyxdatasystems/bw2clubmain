@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PaidContentCreator;
-use App\Models\PaidContentPackages;
-use App\Models\PaidContentPayout;
-use App\Models\PaidContentSubscription;
+use App\Models\ContentCreator\PaidContentCreator;
+use App\Models\ContentCreator\PaidContentPackages;
+use App\Models\ContentCreator\PaidContentPayout;
+use App\Models\ContentCreator\PaidContentSubscription;
 use App\Models\Posts;
-use App\Models\User;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
-use Carbon\Carbon;
 
 class PaidContent extends Controller
 {

@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 
 use App\Events\CourseProgressUpdated;
-use App\Models\Course;
-use App\Models\CourseEnrollment;
-use App\Models\FileUploader;
+use App\Models\Training\Course;
+use App\Models\Training\CourseEnrollment;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Mailables\Content;
-use Image, Session,Share;
+use Image;
+use Session;
+use Share;
 
 class ContentController extends Controller
 {

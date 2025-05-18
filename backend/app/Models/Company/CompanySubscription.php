@@ -2,10 +2,7 @@
 
 namespace App\Models\Company;
 
-use App\Models\CompanySubscriptionPlan;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CompanySubscription extends Model
 {

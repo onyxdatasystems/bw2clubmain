@@ -2,8 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Company\Company;
-use App\Models\Course;
+use App\Models\Training\Course;
 use App\Models\User;
 
 class CoursePolicy

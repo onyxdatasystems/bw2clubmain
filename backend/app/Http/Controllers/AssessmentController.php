@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Assessment;
-use App\Models\Course;
-use App\Models\CourseEnrollment;
+use App\Models\Training\Assessment;
+use App\Models\Training\Course;
+use App\Models\Training\CourseEnrollment;
 use Illuminate\Http\Request;
 
 class AssessmentController extends Controller

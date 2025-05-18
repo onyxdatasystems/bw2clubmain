@@ -1,5 +1,6 @@
 <?php
-namespace App\Models;
+namespace App\Models\Training;
+use App\Models\AssessmentResult;
 use Illuminate\Database\Eloquent\Model;
 
 class Assessment extends Model

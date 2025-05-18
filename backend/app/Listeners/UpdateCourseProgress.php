@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\CourseProgressUpdated;
-use App\Models\CourseEnrollment;
+use App\Models\Training\CourseEnrollment;
 
 class UpdateCourseProgress
 {

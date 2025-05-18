@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
-use App\Models\MentorshipMatch;
+use App\Models\Training\MentorshipMatch;
 use Illuminate\Http\Request;
 
 class MentorshipController extends Controller

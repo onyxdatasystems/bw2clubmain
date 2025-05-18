@@ -2,73 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Comments;
-use App\Models\Job;
-use App\Models\JobCategory;
-use App\Models\JobApply;
-use App\Models\JobWishlist;
-use App\Models\Media_files;
-use App\Models\Posts;
-use App\Models\Stories;
-use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\File;
-use Illuminate\Validation\Rule;
-use App\Models\FileUploader;
-use App\Models\Group;
-use App\Models\Group_member;
-use App\Models\Event;
-use App\Models\Message_thrade;
-use App\Models\Chat;
-use App\Models\Follower;
-use Mockery\Exception;
-use Session;
-use DB;
-use Image;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\Live_streamings;
-use App\Models\Users;
 use App\Models\Album_image;
-use App\Models\Page;
-use App\Models\Pagecategory;
-use App\Models\Page_like;
-use App\Models\Marketplace;
-use App\Models\SavedProduct;
-use App\Models\Brand;
-use App\Models\Currency;
-use App\Models\Video;
+use App\Models\Albums;
 use App\Models\Blog;
 use App\Models\Blogcategory;
-use App\Models\Sponsor;
-use App\Models\Share;
-use App\Models\Setting;
-use App\Models\Invite;
-use App\Models\Notification;
-use App\Models\Saveforlater;
-use App\Models\Report;
-use App\Models\Albums;
-use App\Models\Post_share;
-use App\Models\Payment_gateway;
-use App\Models\PaidContentSubscription;
-use App\Models\PaidContentCreator;
-use App\Models\PaidContentPackages;
-use App\Models\PaidContentPayout;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Chat;
+use App\Models\Comments;
+use App\Models\ContentCreator\PaidContentCreator;
+use App\Models\ContentCreator\PaidContentPackages;
+use App\Models\Currency;
+use App\Models\Event;
+use App\Models\FileUploader;
+use App\Models\Follower;
 use App\Models\Friendships;
 use App\Models\Fundraiser;
 use App\Models\Fundraiser_category;
 use App\Models\Fundraiser_donation;
+use App\Models\Group;
+use App\Models\Group_member;
+use App\Models\Invite;
+use App\Models\Job;
+use App\Models\JobApply;
+use App\Models\JobCategory;
+use App\Models\JobWishlist;
+use App\Models\Live_streamings;
+use App\Models\Marketplace;
+use App\Models\Media_files;
+use App\Models\Message_thrade;
+use App\Models\Notification;
+use App\Models\Page;
+use App\Models\Page_like;
+use App\Models\Pagecategory;
+use App\Models\Posts;
+use App\Models\Report;
+use App\Models\SavedProduct;
+use App\Models\Saveforlater;
+use App\Models\Setting;
+use App\Models\Stories;
+use App\Models\User;
+use App\Models\Users;
+use App\Models\Video;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon; // Import Carbon for date comparisons
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Image;
+use Mockery\Exception;
+use Session;
+
+// Import Carbon for date comparisons
 
 class ApiController extends Controller
 {
@@ -2791,52 +2782,49 @@ class ApiController extends Controller
 
     }
 
-    // public function comment_reaction(Request $request)
-    // {
-    //     $token = $request->bearerToken();
-    //     $response = array();
+     public function comment_reaction(Request $request)
+     {
+         $token = $request->bearerToken();
+         $response = array();
 
-    //     if (isset($token) && $token != '') {
-    //         try {
-    //             $comment_id = $request->comment_id; // Get the post_id from the request
-    //             $user_id = auth('sanctum')->user()->id; // Get the current authenticated user's id
-    //             $reactionValue = $request->react; // Get the reaction value from the request
+         if (isset($token) && $token != '') {
+             try {
+                 $comment_id = $request->comment_id; // Get the post_id from the request
+                 $user_id = auth('sanctum')->user()->id; // Get the current authenticated user's id
+                 $reactionValue = $request->react; // Get the reaction value from the request
+                // Retrieve the post from the database
+                $comment = Comments::where('comment_id', $comment_id)->first();
 
-    //             // Retrieve the post from the database
-    //             $comment = Comments::where('comment_id', $comment_id)->first();
+                 // Check if the post exists
+                 if ($comment) {
+                     // Ensure user_reacts is initialized properly
+                     $userReacts = json_decode($comment->user_reacts, true);
+                    // Remove the user's reaction if the reaction is "none"
+                     if ($reactionValue === "none") {
+                         unset($userReacts[$user_id]);
+                     } else {
+                         // Update the user's reaction
+                         $userReacts[$user_id] = $reactionValue;
+                     }
+                     // Update the user_reacts column in the database
+                     $comment->update(['user_reacts' => json_encode($userReacts)]);
 
-    //             // Check if the post exists
-    //             if ($comment) {
-    //                 // Ensure user_reacts is initialized properly
-    //                 $userReacts = json_decode($comment->user_reacts, true);
-
-    //                 // Remove the user's reaction if the reaction is "none"
-    //                 if ($reactionValue === "none") {
-    //                     unset($userReacts[$user_id]);
-    //                 } else {
-    //                     // Update the user's reaction
-    //                     $userReacts[$user_id] = $reactionValue;
-    //                 }
-
-    //                 // Update the user_reacts column in the database
-    //                 $comment->update(['user_reacts' => json_encode($userReacts)]);
-
-    //                 // Return the updated array
-    //                 $response = $userReacts;
-    //                 return response()->json($response, 200);
-    //             } else {
-    //                 // Handle the case where the post does not exist
-    //                 return response()->json(['error' => 'Comment not found'], 404);
-    //             }
-    //         } catch (\Exception $e) {
-    //             // Handle database errors
-    //             return response()->json(['error' => $e->getMessage()], 500);
-    //         }
-    //     } else {
-    //         // Handle invalid or missing token
-    //         return response()->json(['error' => 'Unauthorized'], 401);
-    //     }
-    // }
+                     // Return the updated array
+                     $response = $userReacts;
+                     return response()->json($response, 200);
+                 } else {
+                     // Handle the case where the post does not exist
+                     return response()->json(['error' => 'Comment not found'], 404);
+                 }
+             } catch (\Exception $e) {
+                 // Handle database errors
+                 return response()->json(['error' => $e->getMessage()], 500);
+             }
+         } else {
+             // Handle invalid or missing token
+             return response()->json(['error' => 'Unauthorized'], 401);
+         }
+     }
 
 
     // public function get_comment(Request $request)

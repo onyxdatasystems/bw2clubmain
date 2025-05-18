@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Training\Cheer;
+use App\Models\Training\Feedback;
 use Illuminate\Database\Eloquent\Model;
 
 class Initiative extends Model

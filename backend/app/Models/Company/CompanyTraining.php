@@ -2,10 +2,8 @@
 
 namespace App\Models\Company;
 
-use App\Models\Training;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Training\Training;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CompanyTraining extends Model
 {

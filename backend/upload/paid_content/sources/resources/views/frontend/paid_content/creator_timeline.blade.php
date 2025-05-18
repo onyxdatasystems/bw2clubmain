@@ -1,5 +1,5 @@
 @php
-    $paid_content = App\Models\PaidContentCreator::where('user_id', auth()->user()->id)->first();
+    $paid_content = App\Models\ContentCreator\PaidContentCreator::where('user_id', auth()->user()->id)->first();
 @endphp
 
 {{-- cover pic and profile pic --}}
@@ -15,7 +15,7 @@
                     <div class="tabs-top">
                         @include('frontend.paid_content.tab_options')
                     </div>
-                    
+
                     {{-- my page --}}
                     @if (isset($timeline_post) || isset($public_post) || isset($subscriber_post))
                         @include('frontend.paid_content.my_page')

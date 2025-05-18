@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
+use App\Models\Training\Course;
 use Illuminate\Http\Request;
-use Image, Session,Share;
+use Image;
+use Session;
+use Share;
 
 class LiveClassController extends Controller
 {

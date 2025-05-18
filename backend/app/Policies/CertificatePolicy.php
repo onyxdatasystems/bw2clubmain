@@ -2,8 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Company\Company;
-use App\Models\Course;
 use App\Models\User;
 
 class CertificatePolicy

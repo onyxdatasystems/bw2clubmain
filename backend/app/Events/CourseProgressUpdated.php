@@ -2,12 +2,13 @@
 
 namespace App\Events;
 
+use App\Models\Training\Course;
 use App\Models\User;
-use App\Models\Course;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+
 class CourseProgressUpdated implements ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;

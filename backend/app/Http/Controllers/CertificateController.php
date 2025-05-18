@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Certificate;
-use App\Models\Course;
-use App\Models\CourseEnrollment;
+use App\Models\Training\Certificate;
+use App\Models\Training\Course;
+use App\Models\Training\CourseEnrollment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 

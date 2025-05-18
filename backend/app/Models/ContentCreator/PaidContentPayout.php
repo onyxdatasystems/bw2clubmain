@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ContentCreator;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PaidContentSubscription extends Model
+class PaidContentPayout extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'subscriber_id',
-        'creator_id',
-        'package_id',
+        'user_id',
+        'requested_amount',
         'issue_date',
-        'expire_date',
+        'received_date',
+        'payment_method',
         'status',
-        'admin_commission',
     ];
 }

@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Training;
 
-use App\Models\Company\Company;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Initiative;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cheer extends Model
 {

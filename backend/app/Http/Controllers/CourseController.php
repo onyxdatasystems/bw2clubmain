@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\CourseEnrollment;
+use App\Models\Training\Course;
+use App\Models\Training\CourseEnrollment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;

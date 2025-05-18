@@ -5,11 +5,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\PaymentProcessor;
 use App\Models\Company\Company;
 use App\Models\Company\CompanySubscription;
-use App\Models\CompanySubscriptionPlan;
-use App\Models\FileUploader;
+use App\Models\Company\CompanySubscriptionPlan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class CompanySubscriptionController extends Controller
 {

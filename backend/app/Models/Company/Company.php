@@ -2,10 +2,8 @@
 
 namespace App\Models\Company;
 
-use App\Models\CompanyAdvertisement;
 use App\Models\ThematicGroup;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
