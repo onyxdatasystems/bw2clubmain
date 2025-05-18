@@ -1,0 +1,76 @@
+1. Install Supervisor
+bash
+
+sudo apt-get update
+sudo apt-get install supervisor
+
+2. Verify Installation
+bash
+
+sudo supervisord --version
+# Should show version 4.x.x
+
+3. Create Configuration File
+sudo nano /etc/supervisor/conf.d/laravel-worker.conf
+
+[program:laravel-worker]
+command=/usr/bin/php /home/judy/your-project-path/artisan queue:work redis --sleep=3 --tries=3
+
+b. Set Proper Environment
+ini
+
+environment=HOME="/home/judy",PATH="/usr/bin:/usr/local/bin:/usr/local/sbin"
+
+c. Add Missing Dependencies
+sudo apt-get install php-cli php-redis php-mbstring php-xml
+
+d. Verify Redis Connection
+
+redis-cli ping
+# Should return "PONG"
+
+e. Test Worker Manually
+php /home/judy/your-project-path/artisan queue:work --once
+
+3. Revised Supervisor Config
+sudo nano /etc/supervisor/conf.d/laravel-worker.conf
+
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=/usr/bin/php /home/onyxdat/public_html/bw2club.onyxdatasystems.com/backend/artisan queue:work redis --sleep=3 --tries=3 --timeout=60
+directory=/home/onyxdat/public_html/bw2club.onyxdatasystems.com
+autostart=true
+autorestart=true
+user=root
+numprocs=2  # Start with fewer workers
+redirect_stderr=true
+stdout_logfile=/home/onyxdat/worker.log
+environment=APP_ENV=production,APP_DEBUG=false,QUEUE_CONNECTION=redis
+
+5. Start the Worker
+sudo supervisorctl start laravel-worker:*
+
+6. Check Status
+sudo supervisorctl status
+
+7. Enable on Boot
+sudo systemctl enable supervisor
+
+4. Apply Changes
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl restart laravel-worker:*
+
+5. Verify Permissions
+sudo chown -R judy:judy /home/judy/your-project-path
+sudo chmod -R 755 /home/judy/your-project-path/storage
+
+6. Check PHP Version
+php -v
+# Ensure PHP 8.0+ is installed
+
+If you still get errors:
+Please share the output from:
+
+sudo tail -n 50 /var/log/supervisor/supervisord.log
+php /home/judy/your-project-path/artisan queue:work --once
