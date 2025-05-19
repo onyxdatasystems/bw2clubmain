@@ -89,9 +89,15 @@ class PaidContentController extends Controller
     {
         $creator = $this->is_creator(auth()->user()->id);
         if ($creator) {
-            return redirect()->route('creator.timeline', ['type' => 'timeline']);
+            return response()->json([
+                'success' => true,
+                'data' => $this->creator_timeline('timeline'),
+            ], 201);
         } else {
-            return redirect()->route('general.timeline');
+            return response()->json([
+                'success' => true,
+                'data' => $this->general_timeline(),
+            ], 201);
         }
     }
 
@@ -99,19 +105,21 @@ class PaidContentController extends Controller
     {
         $creator = $this->is_creator(auth()->user()->id);
         if ($creator) {
-            return redirect()->route('creator.timeline', ['type' => 'timeline']);
+            return response()->json([
+                'success' => true,
+                'data' => $this->creator_timeline('timeline'),
+            ], 201);
         }
 
         $this->user = $this->user_subscription = 0;
-        session(['creator_id' => 0]);
 
         $creators = PaidContentCreator::where('status', 1)
             ->inRandomOrder()->take(16)->get();
-        $page_data = [
-            'view_path' => 'frontend.paid_content.general_timeline',
-            'creators' => $creators,
-        ];
-        return view('frontend.index', $page_data);
+
+        return response()->json([
+            'success' => true,
+            'data' => ['creators' => $creators],
+        ], 201);
     }
 
     public function creator_page_view($page, $id)
@@ -140,16 +148,18 @@ class PaidContentController extends Controller
             $this->user_subscription = $subscription = 0;
         }
 
-        $page_data = [
+        $response = [
             'subscription' => $subscription,
             'posts' => $posts,
             'creator_id' => $id,
             'packages' => $packages,
             'paid_content' => $paid_content,
-            'view_path' => 'frontend.paid_content.creator_page_view',
         ];
 
-        return view('frontend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+        ], 201);
     }
 
     public function load_paid_content_post(Request $request)
@@ -169,11 +179,15 @@ class PaidContentController extends Controller
             $subscription = 0;
         }
 
-        $page_data['user_info'] = Users::find($this->user);
-        $page_data['posts'] = $posts;
-        $page_data['subscription'] = $subscription;
-        $page_data['type'] = 'user_post';
-        return view('frontend.main_content.posts', $page_data);
+        $response['user_info'] = Users::find($this->user);
+        $response['posts'] = $posts;
+        $response['subscription'] = $subscription;
+        $response['type'] = 'user_post';
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+            'message' => 'Page content loaded.'
+        ], 201);
     }
 
     public function createPackage(Request $request)
@@ -211,8 +225,10 @@ class PaidContentController extends Controller
     {
         $admin_commission = DB::table('settings')->where('type', 'commission_rate')->value('description');
         if ($admin_commission == '') {
-            Session::flash('success_message', "Can't pay! Contact admin.");
-            return redirect()->back();
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot pay! Contact admin.'
+            ], 409);
         }
 
         $creator = PaidContentCreator::where('user_id', $request->creator_id)->first();
@@ -223,8 +239,10 @@ class PaidContentController extends Controller
             ->where('creator_id', $request->creator_id)
             ->where('status', 1)
             ->exists()) {
-            Session::flash('success_message', 'Already subscribed.');
-            return redirect()->back();
+            return response()->json([
+                'success' => false,
+                'message' => 'Already subscribed to this creator'
+            ], 409);
         }
 
         $payment_details = [
@@ -258,8 +276,56 @@ class PaidContentController extends Controller
             'success_url' => route('payment.success', ''),
         ];
 
-        session(['payment_details' => $payment_details]);
-        return redirect()->route('payment');
+        return response()->json([
+            'success' => true,
+            'data' => ['payment_details' => $payment_details],
+            'message' => 'Cannot pay! Contact admin.'
+        ], 201);
+    }
+
+    // Search functionality
+    public function search(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'q' => 'required|string|min:2|max:100',
+            'type' => 'sometimes|in:posts,users,products,creators',
+            'page' => 'sometimes|integer|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $searchType = $request->type ?? 'posts';
+        $perPage = 15;
+
+        $results = match($searchType) {
+            'users' => User::where('name', 'LIKE', "%{$request->q}%")
+                ->orWhere('email', 'LIKE', "%{$request->q}%")
+                ->paginate($perPage),
+            'products' => PaidContentPackages::where('title', 'LIKE', "%{$request->q}%")
+                ->orWhere('description', 'LIKE', "%{$request->q}%")
+                ->paginate($perPage),
+            'creators' => PaidContentCreator::where('title', 'LIKE', "%{$request->q}%")
+                ->orWhere('description', 'LIKE', "%{$request->q}%")
+                ->paginate($perPage),
+            default => Post::where('title', 'LIKE', "%{$request->q}%")
+                ->orWhere('content', 'LIKE', "%{$request->q}%")
+                ->paginate($perPage)
+        };
+
+        return response()->json([
+            'success' => true,
+            'data' => $results->items(),
+            'meta' => [
+                'current_page' => $results->currentPage(),
+                'total_pages' => $results->lastPage(),
+                'total_items' => $results->total()
+            ]
+        ]);
     }
 
     public function search_type(Request $request, $type)
@@ -273,20 +339,19 @@ class PaidContentController extends Controller
                 $item['total_post'] = $this->get_posts($item->user_id)->count();
             }
 
-            $page_data = [
+            $response = [
                 'keyword' => $search,
                 'search_as' => 'creator',
                 'search_list' => $search_list,
                 'noScroll' => true,
                 'view_path' => 'frontend.paid_content.searched_result',
             ];
-            $search_item = [
-                'search_as' => 'creator',
-                'keyword' => $search,
-            ];
 
-            session(['search_item' => $search_item]);
-            return view('frontend.index', $page_data);
+            return response()->json([
+                'success' => true,
+                'data' =>['search_item' => $response],
+                'message' => 'Cannot pay! Contact admin.'
+            ], 201);
 
         } elseif ($type == 'subscribers') {
 
@@ -381,12 +446,15 @@ class PaidContentController extends Controller
         // get creator post
         // get_posts(user_id, take, skip_item, post_privacy)
         $posts = $this->get_posts(auth()->user()->id, 5, 0, $privacy);
-        $page_data = [
+        $response = [
             $post_type => $posts,
             'view_path' => 'frontend.paid_content.creator_timeline',
         ];
 
-        return view('frontend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+        ]);
     }
 
     public function load_timeline_post(Request $request)
@@ -404,28 +472,21 @@ class PaidContentController extends Controller
         $offset = $request->offset;
         $posts = $this->get_posts($user_id, $pick, $offset, $privacy);
 
-        $page_data = [
+        $response = [
             'user_info' => Users::find($this->user),
             'type' => 'paid_content',
             'posts' => $posts,
         ];
 
-        return view('frontend.main_content.posts', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+        ]);
     }
 
     public function subscribers()
     {
-        // $subscribers = Users::
-        //     join('paid_content_subscriptions', 'users.id', '=', 'paid_content_subscriptions.subscriber_id')
-        //     ->select('paid_content_subscriptions.*', 'users.name', 'users.email')
-        //     ->get();
 
-        // $subscribers = $subscribers->where('status', 1)->where('creator_id', auth()->user()->id)->take(8);
-        // $page_data = [
-        //     'subscribers' => $subscribers,
-        //     'view_path' => 'frontend.paid_content.creator_timeline',
-        // ];
-        //return view('frontend.index', $page_data);
         $subscribers = PaidContentSubscription::where('creator_id', auth()->user()->id)
         ->where('status', 1)->orderBy('id', 'DESC')->paginate(10);
         $subscribers = PaidContentSubscription::
@@ -437,19 +498,28 @@ class PaidContentController extends Controller
             ->where('paid_content_subscriptions.status', 1)
             ->orderBy('paid_content_subscriptions.id', 'DESC')->paginate(10);
 
-        $page_data = [
+        $response = [
             'subscribers' => $subscribers,
              'view_path' => 'frontend.paid_content.creator_timeline',
         ];
-        return view('frontend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+        ]);
     }
 
+    // Check if user is creator
+    public function isCreator($id)
+    {
+        $isCreator = PaidContentCreator::where('user_id', $id)
+            ->where('status', 1)
+            ->exists();
 
-
-
-
-
-
+        return response()->json([
+            'success' => true,
+            'data' => ['is_creator' => $isCreator]
+        ]);
+    }
     public function packages()
     {
         $packages = PaidContentPackages::where('user_id', auth()->user()->id)->get();
@@ -497,6 +567,22 @@ class PaidContentController extends Controller
                 'errors' => "Package is full."
             ], 422);
         }
+    }
+
+    // Package management
+    public function getPackages($userId)
+    {
+        $packages = PaidContentPackages::where('user_id', $userId)
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $packages->items(),
+            'meta' => [
+                'current_page' => $packages->currentPage(),
+                'total_pages' => $packages->lastPage()
+            ]
+        ]);
     }
 
     public function update_package(Request $request, $id)
@@ -594,11 +680,16 @@ class PaidContentController extends Controller
 
         if ($delete) {
             PaidContentCreator::where('user_id', auth()->user()->id)->update([$type => '']);
-            Session::flash('success_message', 'Photo deleted');
+            return response()->json([
+                'success' => true,
+                'message' => get_phrase('Photo deleted')
+            ],201);
         } else {
-            Session::flash('success_message', 'Something wrong.');
+            return response()->json([
+                'success' => true,
+                'message' => get_phrase('Something went wrong.')
+            ],422);
         }
-        return redirect()->route('settings');
     }
 
     public function request_author(Request $request, $id)
@@ -623,15 +714,25 @@ class PaidContentController extends Controller
 
             PaidContentCreator::insert($data);
             Session::flash('success_message', get_phrase('Request submitted.'));
-            if (auth()->user()->user_role == 'admin') {
-                PaidContentCreator::where('user_id', auth()->user()->id)->update(['status', 1]);
-                return redirect()->route('creator.timeline', auth()->user()->id);
+            if ( $this->user->user_role == 'admin') {
+                PaidContentCreator::where('user_id',  $this->user->id)->update(['status', 1]);
+                return response()->json([
+                    'success' => true,
+                    'data' =>  $this->creator_timeline('timeline'),
+                    'message' => get_phrase('You are already a creator.')
+                ],201);
             }
         } else {
             if (PaidContentCreator::where('user_id', auth()->user()->id)->where('status', 1)->exists()) {
-                Session::flash('success_message', get_phrase('You are already a creator.'));
+                return response()->json([
+                    'success' => false,
+                    'message' => get_phrase('You are already a creator.')
+                ],422);
             } else {
-                Session::flash('success_message', get_phrase('Request pending.'));
+                return response()->json([
+                    'success' => false,
+                    'message' => get_phrase('Author Request pending.')
+                ],422);
             }
         }
         return redirect()->back();
@@ -639,25 +740,64 @@ class PaidContentController extends Controller
 
     public function author_list()
     {
-        $authors = PaidContentCreator::orderBy('id', 'desc')->paginate(10);
-        $page_data = [
-            'authors' => $authors,
-            'view_path' => 'paid_content.author_list',
-        ];
-        return view('backend.index', $page_data);
+        $creators = PaidContentCreator::with('user')
+            ->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => $creators->items(),
+            'meta' => [
+                'current_page' => $creators->currentPage(),
+                'total_pages' => $creators->lastPage()
+            ]
+        ]);
     }
 
     public function author_status($id)
     {
         $status = PaidContentCreator::where('user_id', $id)->value('status');
         if ($status > 0) {
-            PaidContentCreator::where('user_id', $id)->update(['status' => 0]);
+            $creator = PaidContentCreator::where('user_id', $id)->update(['status' => 0]);
             flash()->addSuccess('Author deactivated.');
+            return response()->json([
+                'success' => true,
+                'data' => $creator,
+                'message' => 'Author deactivated.'
+            ]);
         } else {
-            PaidContentCreator::where('user_id', $id)->update(['status' => 1]);
-            flash()->addSuccess('Author activated.');
+            $creator = PaidContentCreator::where('user_id', $id)->update(['status' => 1]);
+            return response()->json([
+                'success' => true,
+                'data' => $creator,
+                'message' => 'Author activated.'
+            ]);
         }
-        return redirect()->back();
+    }
+
+    public function update_author_tatus(Request $request, $id)
+    {
+        $request->user()->authorizeRoles(['admin']);
+
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:active,suspended'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $creator = PaidContentCreator::findOrFail($id);
+        $creator->status = $request->status === 'active' ? 1 : 0;
+        $creator->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $creator,
+            'message' => 'Creator status updated'
+        ]);
     }
 
     public function author_delete($id)

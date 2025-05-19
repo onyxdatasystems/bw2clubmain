@@ -14,24 +14,35 @@ use Image, Session,Share;
 
 class BlogController extends Controller
 {
-    public function blogs(){
-        $page_data['categories'] = Blogcategory::all();
-        $page_data['blogs'] = Blog::orderBy('id','DESC')->limit('10')->get();
-        $page_data['view_path'] = 'frontend.blogs.blogs';
-        return view('frontend.index', $page_data);
+    function __construct(){
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth()->user();
+            return $next($request);
+        });
     }
 
-    public function myblog(){
-        $blogs = Blog::where('user_id',auth()->user()->id)->orderBy('id','DESC')->get();
-        $page_data['blogs'] = $blogs;
-        $page_data['view_path'] = 'frontend.blogs.user_blog';
-        return view('frontend.index', $page_data);
+    public function index()
+    {
+        $blogs = Blog::with('category')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $blogs,
+            'categories' => Blogcategory::all()
+        ]);
     }
 
-    public function create(){
-        $page_data['blog_category'] = Blogcategory::all();
-        $page_data['view_path'] = 'frontend.blogs.create_blog';
-        return view('frontend.index', $page_data);
+    public function userBlogs(){
+        $blogs = Blog::where('user_id', $this->user->id)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $blogs
+        ]);
     }
 
     public function store(Request $request){
@@ -64,96 +75,82 @@ class BlogController extends Controller
         }
         $blog->view = json_encode(array());
         $blog->save();
-        Session::flash('success_message', get_phrase('Blog Created Successfully'));
-        return redirect()->route('blogs');
+
+        return response()->json([
+            'success' => true,
+            'message' => get_phrase('Blog Created Successfully'),
+            'data' => $blog
+        ]);
     }
-
-
-    public function edit($id){
-        $page_data['blog_category'] = Blogcategory::all();
-        $page_data['blog'] =  Blog::find($id);
-        $page_data['view_path'] = 'frontend.blogs.edit_blog';
-        return view('frontend.index', $page_data);
-    }
-
-
 
     public function update(Request $request,$id){
         
         $request->validate([
             'title' => 'required|max:255',
             'category' => 'required',
+            'description' => 'sometimes',
+            'image' => 'nullable|image|max:2048',
+            'tags' => 'nullable|array'
         ]);
+        $blog = Blog::find($id);
 
         if ($request->image && !empty($request->image)) {
 
             $file_name = FileUploader::upload($request->image, 'public/storage/blog/thumbnail', 370);
             FileUploader::upload($request->image, 'public/storage/blog/coverphoto/'.$file_name, 900);
-        }
 
-        $blog = Blog::find($id);
-
-        $blog->user_id = Auth::user()->id;
-        // store image name for delete file operation 
-        $imagename = $blog->thumbnail;
-
-        $blog->user_id = Auth::user()->id;
-        $blog->title = $request->title;
-        $blog->category_id = $request->category;
-        $tags =  json_decode($request->tag,true);
-        $tag_array = array();
-
-        if(is_array($tags)){
-            foreach($tags as $key => $tag){
-                $tag_array[$key]=$tag['value'];
-            }
-        }
-        $blog->tag = json_encode($tag_array);
-        $blog->description = $request->description;
-        !empty($request->image) ? $blog->thumbnail =  $file_name : $blog->thumbnail;
-        $done = $blog->save();
-        if ($done) {
-            // just put the file name and folder name nothing more :) 
-            if(!empty($request->image)){
-                removeFile('blog', $imagename);
-            }
-            Session::flash('success_message', get_phrase('Blog Updated Successfully'));
-            return redirect()->route('myblog');
-        }
-    }
-
-
-
-
-
-    public function delete(){
-        $response = array();
-        $blog = Blog::find($_GET['blog_id']);
-        // store image name for delete file operation 
-        $imagename = $blog->thumbnail;
-
-        $done = $blog->delete();
-        if ($done) {
-            $response = array('alertMessage' => get_phrase('Blog Deleted Successfully'), 'fadeOutElem' => "#blog-" . $_GET['blog_id']);
-            // just put the file name and folder name nothing more :) 
+            $imagename = $blog->thumbnail;
             removeFile('blog', $imagename);
         }
-        return json_encode($response);
+
+        $data = $request->only(['title', 'category_id', 'description']);
+        $blog->user_id = Auth::user()->id;
+        !empty($request->image) ? $blog->thumbnail =  $file_name : $blog->thumbnail;
+        $data['tag'] = json_encode($request->tags ?? []);
+
+        $blog->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Blog updated successfully',
+            'data' => $blog
+        ]);
+    }
+
+    public function delete($id){
+        $blog = Blog::where('user_id', Auth::id())->findOrFail($id);
+
+        if ($blog->thumbnail) {
+            Storage::disk('public')->delete($blog->thumbnail);
+        }
+
+        $blog->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Blog deleted successfully'
+        ]);
     }
 
 
 
-    public function load_blog_by_scrolling(Request $request){
-        $blogs =  Blog::orderBy('id', 'DESC')->skip($request->offset)->take(6)->get();
-        $page_data['blogs'] = $blogs;
-        return view('frontend.blogs.blog-single', $page_data);
+    public function loadMore(Request $request){
+        $blogs = Blog::orderBy('id', 'DESC')
+            ->skip($request->offset)
+            ->take(6)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $blogs
+        ]);
     }
 
 
 
-    public function single_blog($id){
-        $page_data['comments'] = Comments::where('is_type','blog')->where('id_of_type',$id)->get();
-        $page_data['socailshare'] = Share::currentPage()
+    public function show($id){
+        $response['comments'] = Comments::where('is_type','blog')->where('id_of_type',$id)->get();
+        $response['socailshare'] = Share::currentPage()
                             ->facebook()
                             ->twitter()
                             ->linkedin()
@@ -177,51 +174,47 @@ class BlogController extends Controller
             ->orderBy('friendships.importance', 'desc')
             ->take(15)->get();
 
-        $page_data['friendships'] = $friendships;
+        $response['friendships'] = $friendships;
     //new
 
-        $page_data['blog'] = $blog;
-        $page_data['categories'] = Blogcategory::all();
-        $page_data['recent_posts'] = Blog::orderBy('id','DESC')->limit('5')->get();
-        $page_data['view_path'] = 'frontend.blogs.single_blog';
-        return view('frontend.index', $page_data);
-    }
+        $response['blog'] = $blog;
+        $response['categories'] = Blogcategory::all();
+        $response['recent_posts'] = Blog::orderBy('id','DESC')->limit('5')->get();
 
-   
-
-
-    // category wise page view
-    public function category_blog($category){
-        $page_data['categories'] = Blogcategory::all();
-        $page_data['category_id'] = $category;
-        $page_data['blogs'] = Blog::where('category_id',$category)->get();
-        $page_data['view_path'] = 'frontend.blogs.category_blog';
-        return view('frontend.index', $page_data);
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+            'message' => 'Data fetched'
+        ], 201);
     }
 
 
+    public function category_blog($categoryId)
+    {
+        $blogs = Blog::where('category', $categoryId)
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $blogs,
+            'category' => Blogcategory::find($categoryId)
+        ]);
+    }
 
 
-    // blog search 
 
-    public function search(){
-        $search = $_GET['search'];
-        $output="";
-        $posts=Blog::where('title','LIKE','%'.$search."%")->get();
-        if($posts){
-            foreach ($posts as $key => $post) {
-            $output.='<div class="post-entry d-flex">'.
-            '<div class="post-thumb"><img class="img-fluid rounded" src=" '. get_blog_image($post->thumbnail,"thumbnail") .' " alt="Recent Post"> </div>'.
-            '<div class="post-txt ms-2">'.
-            '<h3><a href="'. route("single.blog",$post->id) .'"> '. $post->title .'</a></h3>'.
-            '<div class="post-meta">'.
-            '<span class="date-meta"><a href="#">'.$post->created_at->format("d-M-Y").'</a></span>'.
-            '</div>'.
-            '</div>'.
-            '</div>';
-            }               
-            return Response($output);
-        }
+    // blog search
+    public function search(Request $request){
+
+        $request->validate(['search' => 'required|string']);
+
+        $blogs = Blog::where('title', 'like', '%'.$request->search.'%')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $blogs
+        ]);
 
 
     }

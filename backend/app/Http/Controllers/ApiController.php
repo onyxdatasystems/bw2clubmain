@@ -6218,6 +6218,10 @@ class ApiController extends Controller
                         'tags' => $tags,
                         'tag' => $tag,
                         'commentsCount' => $commentsCount,
+                        'related_posts' => Blog::where('category', $blog->category_id)
+                            ->where('id', '!=', $blog->id)
+                            ->limit(5)
+                            ->get()
 
                     ];
                 }
@@ -6267,15 +6271,26 @@ class ApiController extends Controller
 
         if (isset($token) && $token != '') {
             $user_id = auth('sanctum')->user()->id;
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'title' => 'required|max:255',
                 'category' => 'required',
+                'description' => 'required',
+                'image' => 'nullable|image|max:2048',
+                'tags' => 'nullable|array'
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
             if ($request->image && !empty($request->image)) {
 
                 $file_name = FileUploader::upload($request->image, 'public/storage/blog/thumbnail', 370);
                 FileUploader::upload($request->image, 'public/storage/blog/coverphoto/' . $file_name, 900);
+
             }
 
             $blog = new Blog();
@@ -6283,13 +6298,7 @@ class ApiController extends Controller
             $blog->title = $request->title;
             $blog->category_id = $request->category;
 
-            // $tags = json_decode($request->tag, true);
-            // $tag_array = array();
-            // if (is_array($tags)) {
-            //     foreach ($tags as $key => $tag) {
-            //         $tag_array[$key] = $tag['value'];
-            //     }
-            // }
+
             $blog->tag = json_encode(array_filter(explode(",", $request->tag)));
             if ($request->description && !empty($request->description)) {
                 $blog->description = $request->description;
@@ -6300,11 +6309,17 @@ class ApiController extends Controller
             $blog->view = json_encode(array());
             $done = $blog->save();
             if ($done) {
-                $response['success'] = true;
-                $response['message'] = 'create blog successfully';
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Blog created successfully',
+                    'data' => $blog
+                ], 201);
             } else {
-                $response['success'] = false;
-                $response['message'] = 'Failed to create blog';
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Blog creation failed',
+                    'data' => $blog
+                ], 422);
             }
         } else {
             $response['success'] = false;
@@ -6320,10 +6335,20 @@ class ApiController extends Controller
 
         if (isset($token) && $token != '') {
             $user_id = auth('sanctum')->user()->id;
-            $request->validate([
-                'title' => 'required|max:255',
-                'category' => 'required',
+            $validator = Validator::make($request->all(), [
+                'title' => 'sometimes|max:255',
+                'category' => 'sometimes',
+                'description' => 'sometimes',
+                'image' => 'nullable|image|max:2048',
+                'tags' => 'nullable|array'
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
             if ($request->image && !empty($request->image)) {
 
@@ -6340,15 +6365,7 @@ class ApiController extends Controller
             $blog->user_id = $user_id;
             $blog->title = $request->title;
             $blog->category_id = $request->category;
-            // $tags = json_decode($request->tag, true);
-            // $tag_array = array();
 
-            // if (is_array($tags)) {
-            //     foreach ($tags as $key => $tag) {
-            //         $tag_array[$key] = $tag['value'];
-            //     }
-            // }
-            // $blog->tag = json_encode($tag_array);
             $blog->tag = json_encode(array_filter(explode(",", $request->tag)));
             $blog->description = $request->description;
             !empty($request->image) ? $blog->thumbnail = $file_name : $blog->thumbnail;
@@ -6359,8 +6376,11 @@ class ApiController extends Controller
                     removeFile('blog', $imagename);
                 }
 
-                $response['success'] = true;
-                $response['message'] = 'update successfully';
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Blog updated successfully',
+                    'data' => $blog
+                ], 201);
             } else {
                 $response['success'] = false;
                 $response['message'] = 'Failed to update';
@@ -6375,37 +6395,25 @@ class ApiController extends Controller
     // blog view 
     public function blog_view(Request $request, $id)
     {
-        $token = $request->bearerToken();
-        $response = array();
+        $blog = Blog::with(['comments' => function($query) {
+            $query->where('is_type', 'blog');
+        }])->findOrFail($id);
 
-        if (isset($token) && $token != '') {
-            $user_id = auth('sanctum')->user()->id;
-
-
-
-            //   $going_user_id = $user_id;
-            $blog_id = $id;
-            $blog = Blog::find($blog_id);
-            if ($blog) {
-                $blog_user = json_decode($blog->view);
-                array_push($blog_user, $user_id);
-                $blog_viewer = json_encode($blog_user);
-
-                $blog->view = $blog_viewer;
-                $blog->save();
-
-                $response['success'] = true;
-                $response['message'] = 'blog views';
-            } else {
-                $response['success'] = false;
-                $response['message'] = 'blog not found';
-            }
-
-        } else {
-            $response['success'] = false;
-            $response['message'] = 'Unauthorized access';
+        // Record view
+        $views = json_decode($blog->view) ?? [];
+        if (!in_array(Auth::id(), $views)) {
+            array_push($views, Auth::id());
+            $blog->update(['view' => json_encode($views)]);
         }
-        return $response;
+
+        return response()->json([
+            'success' => true,
+            'data' => $blog,
+            'related_posts' => Blog::where('category', $blog->category_id)
+                ->where('id', '!=', $id)
+                ->limit(5)
+                ->get()
+        ]);
     }
 
     public function blog_delete(Request $request, $id)
