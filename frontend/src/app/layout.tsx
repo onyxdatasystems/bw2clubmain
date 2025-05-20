@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+<<<<<<< HEAD
+import { Providers } from '../redux/provider'
+=======
 
 import { store } from '@/redux/store';
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
 
 
@@ -29,8 +33,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+<<<<<<< HEAD
+      <Providers>
+        {children}
+        </Providers>
+=======
       
         {children}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       </body>
     </html>
   );

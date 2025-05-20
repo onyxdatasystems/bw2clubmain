@@ -4,9 +4,23 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
+<<<<<<< HEAD
+// Define API endpoints using the provided backend URL
+const getApiUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+  const resetEndpoint = 'auth/reset-password'; // Adjust this endpoint as needed
+  return {
+    RESET_PASSWORD: `${baseUrl}${resetEndpoint}`,
+  };
+};
+
+const API = getApiUrl();
+
+=======
 const API = {
   RESET_PASSWORD: 'https://bw2club.onyxdatasystems.com/backend/api/v1/reset_password',
 };
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 class ResetPasswordLayout {
   static mainContainer = "min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200";
   static formContainer = "w-full max-w-md bg-white p-8 rounded-xl shadow-lg";
@@ -36,12 +50,19 @@ const ResetPasswordPage: React.FC = () => {
     setError('');
 
     try {
+<<<<<<< HEAD
+=======
       // Client-side validation
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
       }
 
+<<<<<<< HEAD
+      const response = await fetch(API.RESET_PASSWORD, {
+=======
       const response = await fetch('YOUR_RESET_PASSWORD_API_URL', {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,6 +113,10 @@ const ResetPasswordPage: React.FC = () => {
               className={ResetPasswordLayout.inputField}
               placeholder="Enter new password"
               required
+<<<<<<< HEAD
+              minLength={8}
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             />
           </div>
 
@@ -107,6 +132,10 @@ const ResetPasswordPage: React.FC = () => {
               className={ResetPasswordLayout.inputField}
               placeholder="Confirm new password"
               required
+<<<<<<< HEAD
+              minLength={8}
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             />
           </div>
 

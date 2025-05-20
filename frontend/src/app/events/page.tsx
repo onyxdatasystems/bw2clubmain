@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+// components/Layout.tsx
+"use client";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+
+
+import Navbar from "../Navbar/page";
+import Sidebar from "../SideBar/page";         // <-- your new independent Sidebar
+import EventCard from "./EventCard";
+import Advertisement from "./Advertisement";
+import InviteModal from "./InviteModal";
+=======
 // Layout.tsx
 "use client";
 import React, { useState, useEffect } from "react";
@@ -9,6 +22,7 @@ import Navbar from "../Navbar/page";
 import SideBar from "../SideBar/page";
 import EventCard from "./EventCard";
 import Advertisement from "./Advertisement";
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
 interface Event {
   id: string;
@@ -22,6 +36,31 @@ interface Event {
 }
 
 const Layout: React.FC = () => {
+<<<<<<< HEAD
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  const fetchEvents = async (pageNumber: number) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/load_event_by_scrolling`,
+        {
+          params: { page: pageNumber },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const newEvents: Event[] = response.data;
+      setEvents((prev) => [...prev, ...newEvents]);
+      setHasMore(newEvents.length > 0);
+    } catch {
+=======
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,12 +72,114 @@ const Layout: React.FC = () => {
       const response = await axios.get('/api/events');
       setEvents(response.data);
     } catch (err) {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       setError("Failed to load events");
     } finally {
       setLoading(false);
     }
   };
 
+<<<<<<< HEAD
+  const handleScroll = useCallback(() => {
+    if (
+      window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 300 &&
+      hasMore &&
+      !loading
+    ) {
+      setPage((prev) => prev + 1);
+    }
+  }, [hasMore, loading]);
+
+  useEffect(() => {
+    fetchEvents(page);
+  }, [page]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  const handleEventAction = async (actionType: string, eventId: string) => {
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${actionType}`,
+        { event_id: eventId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const newStatus = actionType.split("/").pop() as Event["status"];
+      setEvents((prev) =>
+        prev.map((ev) =>
+          ev.id === eventId ? { ...ev, status: newStatus } : ev
+        )
+      );
+    } catch (err) {
+      console.error("Action failed:", err);
+    }
+  };
+
+  const openInviteModal = (eventId: string) => {
+    setSelectedEventId(eventId);
+    setShowInviteModal(true);
+  };
+  const closeInviteModal = () => {
+    setSelectedEventId(null);
+    setShowInviteModal(false);
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen bg-[#f8f9fa]">
+      <Navbar />
+
+      <div className="flex flex-1">
+        {/* Fixed Sidebar (w-64 on md+) */}
+        <Sidebar joinedGroups={[]} />
+
+        {/* Content + Advertisement */}
+        <div className="flex flex-1">
+          {/* Main events list; offset by sidebar width */}
+          <main className="flex-1 p-4 sm:p-6 md:p-8 md:ml-64">
+            <h1 className="text-2xl font-semibold mb-4 text-gray-700">
+              Upcoming Events
+            </h1>
+            {error && <p className="text-red-500">{error}</p>}
+
+            <div className="flex flex-wrap gap-6">
+              {events.map((event) => (
+                <EventCard
+                  key={event.id}
+                  {...event}
+                  onAction={(type) => handleEventAction(type, event.id)}
+                  onInvite={() => openInviteModal(event.id)}
+                />
+              ))}
+            </div>
+
+            {loading && (
+              <p className="mt-6 text-gray-500">Loading more events...</p>
+            )}
+          </main>
+
+          {/* Right‑hand Advertisement (only on lg+) */}
+          <aside className="hidden lg:block lg:w-1/4 p-4">
+            <Advertisement />
+          </aside>
+        </div>
+      </div>
+
+      {showInviteModal && selectedEventId && (
+        <InviteModal
+          eventId={selectedEventId}
+          onClose={closeInviteModal}
+          activeTab="defaultTab"
+          onTabChange={(tab) => console.log("Tab:", tab)}
+        />
+      )}
+=======
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -150,8 +291,13 @@ const Layout: React.FC = () => {
           <Advertisement />
         </aside>
       </div>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default Layout;
+=======
+export default Layout;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

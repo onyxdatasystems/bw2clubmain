@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+"use client";
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
@@ -13,7 +17,10 @@ interface GroupData {
   postsCount: number;
   membersCount: number;
   description: string;
+<<<<<<< HEAD
+=======
   // Add other needed properties
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 }
 
 const GroupProfile: React.FC<GroupProfileProps> = ({ groupId }) => {
@@ -25,8 +32,13 @@ const GroupProfile: React.FC<GroupProfileProps> = ({ groupId }) => {
     const fetchGroupData = async () => {
       try {
         const [detailsRes, peopleRes] = await Promise.all([
+<<<<<<< HEAD
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/view/details/${groupId}`),
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/people/info/${groupId}`)
+=======
           fetch(`https://bw2club.onyxdatasystems.com/backend/api/v1/group/view/details/${groupId}`),
           fetch(`https://bw2club.onyxdatasystems.com/backend/api/v1/group/people/info/${groupId}`) // Fixed typo in "people"
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
         ]);
         
         if (!detailsRes.ok || !peopleRes.ok) throw new Error('Failed to load group data');
@@ -50,10 +62,17 @@ const GroupProfile: React.FC<GroupProfileProps> = ({ groupId }) => {
     formData.append('cover', file);
     
     try {
+<<<<<<< HEAD
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/update/coverphoto/group/${groupId}`,
+        { method: 'POST', body: formData }
+      );
+=======
       const response = await fetch(`https://bw2club.onyxdatasystems.com/backend/api/v1/update/coverphoto/group/${groupId}`, {
         method: 'POST',
         body: formData
       });
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       
       if (response.ok) {
         const { coverUrl } = await response.json();
@@ -81,12 +100,20 @@ const GroupProfile: React.FC<GroupProfileProps> = ({ groupId }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+<<<<<<< HEAD
+      <div className="relative h-48 md:h-64">
+        <Image
+          src={groupData.coverPhoto || '/default-cover.jpg'}
+          alt="Group Cover"
+          fill
+=======
       <div className="relative">
         <Image
           src={groupData.coverPhoto || '/default-cover.jpg'}
           alt="Group Cover"
           width={600}
           height={200}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
           className="rounded-t-lg object-cover"
           priority
         />

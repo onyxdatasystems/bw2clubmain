@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+"use client"
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
@@ -20,7 +24,13 @@ const ThematicGroupList: React.FC = () => {
 
   const loadInitialGroups = async () => {
     try {
+<<<<<<< HEAD
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/all/view`
+      );
+=======
       const response = await fetch('/api/group/all/view');
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       const data = await response.json();
       setGroups(data.groups);
     } catch (error) {
@@ -28,12 +38,22 @@ const ThematicGroupList: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
+  const loadMoreGroups = React.useCallback(async () => {
+=======
   const loadMoreGroups = async () => {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     if (!hasMore || loading) return;
     setLoading(true);
     
     try {
+<<<<<<< HEAD
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/load_groups_by_scrolling?page=${page}`
+      );
+=======
       const response = await fetch(`/api/load_groups_by_scrolling?page=${page}`);
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       const newGroups = await response.json();
       
       if (newGroups.length === 0) {
@@ -46,13 +66,22 @@ const ThematicGroupList: React.FC = () => {
     } finally {
       setLoading(false);
     }
+<<<<<<< HEAD
+  }, [hasMore, loading, page]);
+=======
   };
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
   const handleGroupAction = async (groupId: string, action: 'join' | 'leave') => {
     try {
       const endpoint = action === 'join' 
+<<<<<<< HEAD
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/join/${groupId}`
+        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/rjoin/${groupId}`;
+=======
         ? `/api/group/join/${groupId}`
         : `/api/group/rjoin/${groupId}`;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
       const response = await fetch(endpoint, { method: 'GET' });
       
@@ -68,6 +97,23 @@ const ThematicGroupList: React.FC = () => {
 
   useEffect(() => {
     loadInitialGroups();
+<<<<<<< HEAD
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop !== 
+        document.documentElement.offsetHeight) return;
+      loadMoreGroups();
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadMoreGroups]);
+
+  return (
+    <div className="w-full flex flex-col gap-4">
+      {groups.map((group) => (
+        <div key={group.id} className="w-full bg-white flex items-center p-4 rounded-lg shadow-sm">
+          <div className="h-[70px] w-[70px] relative flex-shrink-0">
+=======
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -83,11 +129,16 @@ const ThematicGroupList: React.FC = () => {
       {groups.map((group) => (
         <div key={group.id} className="w-full h-[110px] bg-white flex items-center p-4">
           <div className="h-[70px] w-[70px] relative">
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             <Image
               src={group.avatar}
               alt={group.title}
               fill
+<<<<<<< HEAD
+              className="object-cover rounded-lg"
+=======
               className="object-cover"
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             />
           </div>
           

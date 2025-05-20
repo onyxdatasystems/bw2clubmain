@@ -31,5 +31,9 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({
   );
 };
 
+<<<<<<< HEAD
+export default HeaderSection;
+=======
 export default HeaderSection;
 
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+"use client";
+=======
 "use client "
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 import React, { useState } from 'react';
 import Image from 'next/image';
 
@@ -10,7 +14,19 @@ interface Education {
   endDate: string;
 }
 
+<<<<<<< HEAD
+interface UserProfileEditEduProps {
+  onEditComplete?: () => void;
+  onSave?: (education: Education) => void;
+}
+
+const UserProfileEditEdu: React.FC<UserProfileEditEduProps> = ({ 
+  onEditComplete, 
+  onSave 
+}) => {
+=======
 const UserProfileEditEdu: React.FC = () => {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   const [education, setEducation] = useState<Education>({
     school: '',
     degree: '',
@@ -27,6 +43,18 @@ const UserProfileEditEdu: React.FC = () => {
     }));
   };
 
+<<<<<<< HEAD
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSave) {
+      onSave(education);
+    }
+    if (onEditComplete) {
+      onEditComplete();
+    }
+  };
+
+=======
   const handleSave = () => {
     // Handle save logic
     console.log('Education saved:', education);
@@ -37,6 +65,7 @@ const UserProfileEditEdu: React.FC = () => {
     console.log('Edit completed:', education);
     // Additional logic for completing the edit can be added here
   }
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 w-full max-w-lg min-h-[306px] flex flex-col gap-8">
       <div className="flex flex-col gap-4">
@@ -99,7 +128,11 @@ const UserProfileEditEdu: React.FC = () => {
 
       <div className="flex justify-end gap-2">
         <button
+<<<<<<< HEAD
+          onClick={onEditComplete}
+=======
           onClick={() => console.log('Close')}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
           className="px-4 py-2 text-sm font-medium text-purple-600 border border-purple-600 rounded-full hover:bg-purple-50"
         >
           Close
@@ -110,6 +143,9 @@ const UserProfileEditEdu: React.FC = () => {
         >
           Save changes
         </button>
+<<<<<<< HEAD
+      </div>
+=======
         
     
       <button onClick={onEditComplete}
@@ -118,9 +154,14 @@ const UserProfileEditEdu: React.FC = () => {
               Complete Edit</button>
     </div>
     
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     </div>
   );
 };
 
+<<<<<<< HEAD
+export default UserProfileEditEdu;
+=======
 export default UserProfileEditEdu;
 
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

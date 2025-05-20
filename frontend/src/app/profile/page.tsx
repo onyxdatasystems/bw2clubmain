@@ -1,5 +1,34 @@
 "use client";
 import React from "react";
+<<<<<<< HEAD
+
+
+import Navbar from "../Navbar/page";
+
+import ProfileSection_ProfilePosts from "./ProfileSection_ProfilePosts";
+import Ads from "./Ads";
+ const Layout=()=>{
+    return (
+      <div className="flex flex-col h-screen w-full bg-gray-100 relative">
+        <Navbar />
+        
+       
+          
+          <main className="flex flex-col flex-1 overflow-y-auto p-2 md:p-4">
+            <ProfileSection_ProfilePosts  />
+          </main>
+
+          <div className="hidden lg:block lg:w-1/5 overflow-y-auto">
+            <Ads />
+          </div>
+     
+      </div>
+    );
+  }
+
+
+export default Layout;
+=======
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Navbar from "../Navbar/page";
@@ -92,3 +121,4 @@ class Layout extends React.Component<{}, LayoutState> {
 }
 
 export default Layout;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

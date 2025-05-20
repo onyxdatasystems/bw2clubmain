@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+import SideNav from './SideNav';
+
+const Sidebar = () => {
+  return (
+    <div className="flex">
+      <SideNav />
+      {/* Other content */}
+    </div>
+  );
+};
+
+export default Sidebar;
+=======
 'use client';
 import React from 'react';
 import Image from 'next/image';
@@ -158,3 +172,4 @@ const SideNav: React.FC<SideNavProps> = ({ className = '', size = 'md' }) => {
 };
 
 export default SideNav;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

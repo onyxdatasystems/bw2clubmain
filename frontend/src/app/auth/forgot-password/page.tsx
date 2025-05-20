@@ -4,9 +4,20 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+<<<<<<< HEAD
+// Environment-based API configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+const FORGOT_PASSWORD_ENDPOINT = 'auth/forgot-password'; // Adjust this endpoint as needed
+
+const API = {
+  FORGOT_PASSWORD: `${API_BASE_URL}${FORGOT_PASSWORD_ENDPOINT}`,
+};
+
+=======
 const API = {
   FORGOT_PASSWORD: 'https://bw2club.onyxdatasystems.com/backend/api/v1/forgot_password',
 };
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 class ForgotPasswordAnimations {
   static container = {
     hidden: { opacity: 0 },

@@ -1,10 +1,16 @@
 
 'use client';
+<<<<<<< HEAD
+import React from 'react';
+
+export abstract class BaseComponent<P = object, S = object> extends React.Component<P, S> {
+=======
 
 import React from 'react';
 import { motion } from 'framer-motion';
 
 export abstract class BaseComponent<P = {}, S = {}> extends React.Component<P, S> {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   protected defaultAnimation = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },

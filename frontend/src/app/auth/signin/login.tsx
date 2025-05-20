@@ -5,6 +5,19 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
+<<<<<<< HEAD
+// Environment-based API configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+const LOGIN_ENDPOINT = '/login';
+const SESSION_CHECK_ENDPOINT = '/validate';
+
+const API = {
+  LOGIN: `${API_BASE_URL}${LOGIN_ENDPOINT}`,
+  SESSION_CHECK: `${API_BASE_URL}${SESSION_CHECK_ENDPOINT}`
+};
+
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 // OOP Class for Animations
 class LoginAnimations {
   static container = {
@@ -77,7 +90,11 @@ const Login: React.FC = () => {
       if (!token) return;
 
       try {
+<<<<<<< HEAD
+        const response = await fetch(API.SESSION_CHECK, {
+=======
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/login`, {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -103,15 +120,25 @@ const Login: React.FC = () => {
     setLoginError('');
 
     try {
+<<<<<<< HEAD
+      const response = await fetch(API.LOGIN, {
+        method: 'POST',
+        credentials: 'include',
+=======
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
         method: 'POST',
         credentials: 'include', // Required for cookies
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
+<<<<<<< HEAD
+        body: JSON.stringify({ email, password }),
+=======
         body: JSON.stringify({email, password}),
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       });
 
       const data = await response.json();

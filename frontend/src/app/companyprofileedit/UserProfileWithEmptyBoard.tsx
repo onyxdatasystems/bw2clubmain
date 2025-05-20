@@ -1,3 +1,190 @@
+<<<<<<< HEAD
+// components/UserProfileWithEmptyBoard.tsx
+"use client";
+
+import { motion } from "framer-motion";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import BaseProfile from "./BaseProfile";
+
+interface PostOption {
+  icon: string;
+  label: string;
+}
+
+const UserProfileWithEmptyBoard: React.FC = () => {
+  const [postContent, setPostContent] = useState("");
+  const [isPosting, setIsPosting] = useState(false);
+  const [hasPosts, setHasPosts] = useState(false);
+
+  const postOptions: PostOption[] = [
+    { icon: "/icons/image.svg", label: "Image" },
+    { icon: "/icons/video.svg", label: "Video" },
+    { icon: "/icons/attachment.svg", label: "Attachment" },
+  ];
+
+  useEffect(() => {
+    // Check if there are any posts
+    (async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/check`
+        );
+        const data = await res.json();
+        setHasPosts(data.hasPosts);
+      } catch {
+        console.error("Error checking posts");
+      }
+    })();
+  }, []);
+
+  const handlePostSubmit = async () => {
+    if (!postContent.trim()) return;
+    setIsPosting(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: postContent }),
+        }
+      );
+      if (res.ok) {
+        setHasPosts(true);
+        setPostContent("");
+      }
+    } catch (err) {
+      console.error("Submit error", err);
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
+  return (
+    <BaseProfile
+      name="Better Women Better World"
+      role="Social Networking Platform"
+      location="Mid, Delaware"
+      establishedDate="Established on August 2, 2021"
+      website="https://growwr.co"
+      avatarUrl="/avatars/avatar-10.png"
+      backgroundUrl="/images/background-10.png"
+    >
+      {({ renderTabs, activeTab }) => (
+        <div>
+          {/* show the tab bar */}
+          {renderTabs()}
+
+          {/* only render Board tab content */}
+          {activeTab === "Board" && (
+            <>
+              {/* Composer */}
+              <motion.div
+                className="mt-4 w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex gap-4">
+                  <motion.div
+                    className="w-10 h-10 rounded-full bg-purple-500 overflow-hidden"
+                    whileHover={{ rotate: 5, scale: 1.1 }}
+                  >
+                    <Image
+                      src="/avatars/user-avatar.png"
+                      alt="User avatar"
+                      width={40}
+                      height={40}
+                      className="object-cover"
+                    />
+                  </motion.div>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="What's going on..."
+                      className="w-full p-3 mb-2 border rounded focus:border-indigo-600 focus:outline-none"
+                      value={postContent}
+                      onChange={(e) => setPostContent(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handlePostSubmit()}
+                    />
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2">
+                        {postOptions.map((opt) => (
+                          <motion.button
+                            key={opt.label}
+                            className="p-2 bg-gray-100 rounded-full"
+                            whileHover={{ scale: 1.1 }}
+                            onClick={() =>
+                              console.log(`${opt.label} clicked`)
+                            }
+                          >
+                            <Image
+                              src={opt.icon}
+                              alt={opt.label}
+                              width={20}
+                              height={20}
+                            />
+                          </motion.button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={handlePostSubmit}
+                        disabled={isPosting || !postContent.trim()}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50"
+                      >
+                        {isPosting ? "Posting..." : "Post"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Empty or posts */}
+              {!hasPosts ? (
+                <motion.div
+                  className="mt-6 py-14 text-center bg-white border border-gray-200 rounded-lg"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <Image
+                    src="/icons/empty-feed.svg"
+                    alt="Empty"
+                    width={80}
+                    height={80}
+                    className="mx-auto opacity-60"
+                  />
+                  <p className="mt-4 text-gray-500">
+                    Your board is empty
+                  </p>
+                  <button
+                    onClick={() =>
+                      document.querySelector("input")?.focus()
+                    }
+                    className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded"
+                  >
+                    Create First Post
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="mt-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {/* replace with actual posts list */}
+                  <p className="text-gray-500 text-center">
+                    Your posts will appear here.
+                  </p>
+                </motion.div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+=======
 "use client";
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -159,8 +346,13 @@ const UserProfileWithEmptyBoard: React.FC = () => {
           />
         </motion.button>
       </motion.div>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     </BaseProfile>
   );
 };
 
+<<<<<<< HEAD
 export default UserProfileWithEmptyBoard;
+=======
+export default UserProfileWithEmptyBoard;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

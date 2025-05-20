@@ -1,3 +1,181 @@
+<<<<<<< HEAD
+// components/Feedback.tsx
+"use client";
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import React, { useState } from 'react';
+
+interface FeedbackItem {
+  id: string;
+  user: {
+    name: string;
+    avatar: string;
+    role: string;
+  };
+  comment: string;
+  rating: number;
+  date: string;
+}
+
+const Feedback: React.FC = () => {
+  const [feedback, setFeedback] = useState<FeedbackItem[]>([
+    {
+      id: '1',
+      user: {
+        name: 'Sarah Johnson',
+        avatar: '/avatars/avatar-1.png',
+        role: 'CEO at TechCorp'
+      },
+      comment: 'The platform has been incredibly useful for our team. The interface is intuitive and the features are exactly what we needed to streamline our workflow.',
+      rating: 5,
+      date: '2 days ago'
+    },
+    {
+      id: '2',
+      user: {
+        name: 'Michael Chen',
+        avatar: '/avatars/avatar-2.png',
+        role: 'Product Manager'
+      },
+      comment: 'Good overall experience, but there are some minor bugs that need fixing. Customer support was responsive when we reported issues.',
+      rating: 4,
+      date: '1 week ago'
+    }
+  ]);
+
+  const [newFeedback, setNewFeedback] = useState('');
+  const [rating, setRating] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitFeedback = async () => {
+    if (!newFeedback.trim() || rating === 0) return;
+
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newItem: FeedbackItem = {
+        id: Date.now().toString(),
+        user: {
+          name: 'Current User',
+          avatar: '/avatars/current-user.png',
+          role: 'Member'
+        },
+        comment: newFeedback,
+        rating,
+        date: 'Just now'
+      };
+
+      setFeedback([newItem, ...feedback]);
+      setNewFeedback('');
+      setRating(0);
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div 
+      className="bg-white rounded-lg border border-[#ebecef] p-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
+      <h2 className="text-xl font-semibold text-[#3a3a3a] mb-6">Feedback</h2>
+      
+      {/* Feedback Form */}
+      <motion.div 
+        className="mb-8 p-4 bg-gray-50 rounded-lg"
+        whileHover={{ boxShadow: "0px 2px 8px rgba(0,0,0,0.05)" }}
+      >
+        <h3 className="text-sm font-medium text-[#3a3a3a] mb-3">Leave your feedback</h3>
+        <textarea
+          className="w-full p-3 border border-[#ebecef] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#7171c1] focus:border-transparent mb-3"
+          rows={3}
+          placeholder="Share your thoughts..."
+          value={newFeedback}
+          onChange={(e) => setNewFeedback(e.target.value)}
+        />
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <motion.button
+                key={star}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setRating(star)}
+              >
+                <Image 
+                  src={star <= rating ? "/icons/star-filled.svg" : "/icons/star.svg"}
+                  alt={`Rate ${star} star`}
+                  width={24}
+                  height={24}
+                />
+              </motion.button>
+            ))}
+          </div>
+          
+          <motion.button
+            className="px-4 py-2 bg-gradient-to-b from-[#8585d5] to-[#6767b7] text-white rounded-full text-sm disabled:opacity-50"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSubmitFeedback}
+            disabled={isSubmitting || !newFeedback.trim() || rating === 0}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </motion.button>
+        </div>
+      </motion.div>
+      
+      {/* Feedback List */}
+      <div className="space-y-6">
+        {feedback.map((item) => (
+          <motion.div 
+            key={item.id}
+            className="border-b border-[#ebecef] pb-6 last:border-0 last:pb-0"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <div className="flex items-start gap-4 mb-3">
+              <Image 
+                src={item.user.avatar}
+                alt={item.user.name}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <div>
+                <h4 className="font-medium text-[#3a3a3a]">{item.user.name}</h4>
+                <p className="text-xs text-[#636878]">{item.user.role}</p>
+              </div>
+              <div className="ml-auto flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Image 
+                    key={star}
+                    src={star <= item.rating ? "/icons/star-filled.svg" : "/icons/star.svg"}
+                    alt={`${star} star`}
+                    width={16}
+                    height={16}
+                  />
+                ))}
+                <span className="text-xs text-[#636878] ml-1">{item.date}</span>
+              </div>
+            </div>
+            <p className="text-sm text-[#3a3a3a] pl-14">{item.comment}</p>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+export default Feedback;
+=======
 // components/UserProfileWithPostsAndFeedback.tsx
 "use client"
 import { motion } from 'framer-motion';
@@ -147,3 +325,4 @@ const UserProfileWithPostsAndFeedback: React.FC = () => {
 };
 
 export default UserProfileWithPostsAndFeedback;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

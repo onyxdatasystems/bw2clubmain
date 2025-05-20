@@ -13,7 +13,11 @@ import { redirect } from 'next/navigation';
 export default class Layout extends React.Component {
   componentDidMount() {
     if (typeof window !== 'undefined' && !localStorage.getItem('token')) {
+<<<<<<< HEAD
+      redirect('/auth/signin');
+=======
       redirect('/login');
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     }
   }
 
@@ -27,7 +31,11 @@ export default class Layout extends React.Component {
       >
         <Navbar />
         <div className="flex flex-col md:flex-row flex-grow">
+<<<<<<< HEAD
+          <SideBar  />
+=======
           <SideBar className="flex-none w-64" />
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
           <motion.div 
             className="flex flex-col flex-grow p-6 space-y-6"
             initial={{ opacity: 0 }}

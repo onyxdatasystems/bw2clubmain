@@ -1,6 +1,10 @@
 // PostCompose.tsx
 "use client"
+<<<<<<< HEAD
+import React from 'react';
+=======
 import React, { useState } from 'react';
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import BaseComponent from './BaseComponent';

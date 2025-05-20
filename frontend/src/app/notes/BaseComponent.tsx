@@ -3,7 +3,11 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 
+<<<<<<< HEAD
+abstract class BaseComponent<P = object, S = object> extends React.Component<P, S> {
+=======
 abstract class BaseComponent<P = {}, S = {}> extends React.Component<P, S> {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   protected defaultAnimation = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -24,7 +28,11 @@ abstract class BaseComponent<P = {}, S = {}> extends React.Component<P, S> {
 
   protected wrapWithMotion(
     children: React.ReactNode,
+<<<<<<< HEAD
+    customAnimation?: Partial<import('framer-motion').AnimationProps>,
+=======
     customAnimation?: any,
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     className?: string
   ) {
     return (

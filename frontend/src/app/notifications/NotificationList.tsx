@@ -12,6 +12,12 @@ interface Notification {
   time: string;
   type: string;
   read_at: string | null;
+<<<<<<< HEAD
+  group_id?: number;
+  event_id?: number;
+  fundraiser_id?: number;
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 }
 
 interface NotificationListProps {
@@ -47,9 +53,13 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
         }
       });
       
+<<<<<<< HEAD
+      if (!response.ok) throw new Error('Failed to fetch notifications');
+=======
       if (!response.ok) {
         throw new Error('Failed to fetch notifications');
       }
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       
       const data = await response.json();
       this.setState({ 
@@ -64,6 +74,35 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
     }
   };
 
+<<<<<<< HEAD
+  handleAction = async (notificationId: number, action: 'accept' | 'decline') => {
+    try {
+      const notification = this.state.notifications.find(n => n.id === notificationId);
+      if (!notification) throw new Error('Notification not found');
+
+      let url = '';
+      switch (notification.type) {
+        case 'friend_request':
+          url = `/api/${action}_friend_notification/${notificationId}`;
+          break;
+        case 'group_invite':
+          if (!notification.group_id) throw new Error('Missing group ID');
+          url = `/api/${action}_group_notification/${notificationId}/${notification.group_id}`;
+          break;
+        case 'event_invite':
+          if (!notification.event_id) throw new Error('Missing event ID');
+          url = `/api/${action}_event_notification/${notificationId}/${notification.event_id}`;
+          break;
+        case 'fundraiser_invite':
+          if (!notification.fundraiser_id) throw new Error('Missing fundraiser ID');
+          url = `/api/${action}_fundraiser_notification/${notificationId}/${notification.fundraiser_id}`;
+          break;
+        default:
+          throw new Error('Unsupported notification type');
+      }
+
+      const response = await fetch(url, {
+=======
   handleAction = async (notificationId: number, action: string) => {
     try {
       const endpointMap: Record<string, string> = {
@@ -76,12 +115,70 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
       const type = endpointMap[this.state.notifications.find(n => n.id === notificationId)?.type || ''];
       
       const response = await fetch(`/api/notifications/${action}-${type}/${notificationId}`, {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         }
       });
+<<<<<<< HEAD
+
+      if (!response.ok) throw new Error(`Failed to ${action} notification`);
+      await this.fetchNotifications();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  markAsRead = async (notificationId: number) => {
+    try {
+      await fetch(`/api/mark_as_read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      await this.fetchNotifications();
+    } catch (error) {
+      console.error('Error marking as read:', error);
+    }
+  };
+
+  renderNotificationActions = (notification: Notification) => {
+    const actionTypes = ['friend_request', 'group_invite', 'event_invite', 'fundraiser_invite'];
+    
+    if (!actionTypes.includes(notification.type)) return null;
+
+    return (
+      <div className="flex space-x-2 pr-4">
+        <motion.button
+          className="px-3 py-1 bg-green-500 text-white rounded-full text-xs"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            this.handleAction(notification.id, 'accept');
+          }}
+        >
+          Accept
+        </motion.button>
+        <motion.button
+          className="px-3 py-1 bg-red-500 text-white rounded-full text-xs"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            this.handleAction(notification.id, 'decline');
+          }}
+        >
+          Decline
+        </motion.button>
+      </div>
+    );
+  };
+
+=======
       
       if (!response.ok) {
         throw new Error(`Failed to ${action} notification`);
@@ -95,11 +192,25 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
     }
   };
 
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   render() {
     const { className = '', size = 'lg' } = this.props;
     const { notifications, loading, error } = this.state;
     const responsiveClasses = this.getResponsiveClasses(size);
 
+<<<<<<< HEAD
+    if (loading) return (
+      <div className="flex justify-center items-center h-32">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+
+    if (error) return (
+      <div className="p-4 bg-red-100 text-red-700 rounded">
+        {error}
+      </div>
+    );
+=======
     if (loading) {
       return (
         <div className="flex justify-center items-center h-32">
@@ -115,6 +226,7 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
         </div>
       );
     }
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
     return (
       <motion.div 
@@ -130,6 +242,10 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
               }`}
               whileHover={{ x: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
+<<<<<<< HEAD
+              onClick={() => this.markAsRead(notification.id)}
+=======
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             >
               <div className="flex items-center pl-4 w-full">
                 <motion.div 
@@ -159,6 +275,9 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
                   </span>
                 </div>
                 
+<<<<<<< HEAD
+                {this.renderNotificationActions(notification)}
+=======
                 {notification.type === 'friend_request' && (
                   <div className="flex space-x-2 pr-4">
                     <motion.button
@@ -185,6 +304,7 @@ export class NotificationList extends BaseComponent<NotificationListProps, Notif
                     </motion.button>
                   </div>
                 )}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
               </div>
             </motion.div>
           ))}

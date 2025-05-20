@@ -1,3 +1,102 @@
+<<<<<<< HEAD
+// components/UserProfileWithPosts.tsx
+"use client";
+
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import BaseProfile from "./BaseProfile";
+import PostComposer from "./PostComposer";
+import PostItem from "./PostItem";
+import EmptyState from "./shared/EmptyState";
+import FloatingActionButton from "./shared/FloatingActionButton";
+import { Plus } from "lucide-react";
+
+type Post = {
+  id: number;
+  content: string;
+  image?: string;
+  author: { name: string; avatarUrl: string };
+  createdAt: string;
+};
+
+const initialPosts: Post[] = [
+  {
+    id: 1,
+    content: "Welcome to our new social platform!",
+    author: { name: "Admin", avatarUrl: "/avatars/avatar-1.png" },
+    createdAt: new Date().toISOString(),
+  },
+];
+
+const UserProfileWithPosts: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
+
+  const hasPosts = posts.length > 0;
+
+  const handleNewPost = (newPost: Post) => {
+    setPosts((prev) => [newPost, ...prev]);
+  };
+
+  return (
+    <BaseProfile
+      name="Better Women Better World"
+      role="Social Networking Platform"
+      location="Mid, Delaware"
+      establishedDate="Established on August 2, 2021"
+      website="https://growwr.co"
+      avatarUrl="/avatars/avatar-10.png"
+      backgroundUrl="/images/background-10.png"
+    >
+      {({ renderTabs, activeTab }) => (
+        <div>
+          {/* render the shared tabs bar */}
+          {renderTabs()}
+
+          {/* Gallery tab: post composer + list */}
+          {activeTab === "Gallery" && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="mt-4">
+                <PostComposer onSubmit={handleNewPost} />
+              </div>
+              {hasPosts ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  {posts.map((post) => (
+                    <PostItem key={post.id} post={post} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  title="No Posts Yet"
+                  subtitle="Share your first post to get started."
+                />
+              )}
+            </motion.div>
+          )}
+
+          {/* Board tab: placeholder for activity */}
+          {activeTab === "Board" && (
+            <div className="mt-6">
+              <EmptyState
+                title="Recent Activity"
+                subtitle="Your latest interactions will appear here."
+              />
+            </div>
+          )}
+
+          {/* Floating action button for quick compose */}
+          {activeTab === "Gallery" && (
+            <FloatingActionButton
+              icon={Plus}
+              onClick={() => document.querySelector("textarea")?.focus()}
+            />
+          )}
+        </div>
+      )}
+=======
 "use client"
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -162,8 +261,13 @@ const UserProfileWithPosts: React.FC = () => {
           />
         </motion.button>
       </motion.div>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     </BaseProfile>
   );
 };
 
+<<<<<<< HEAD
 export default UserProfileWithPosts;
+=======
+export default UserProfileWithPosts;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

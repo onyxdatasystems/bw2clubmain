@@ -1,3 +1,68 @@
+<<<<<<< HEAD
+// components/UserProfileWithAbout.tsx
+"use client";
+
+import { motion } from "framer-motion";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import BaseProfile from "./BaseProfile";
+
+interface AboutData {
+  description: string;
+  website: string;
+  phone: string;
+  employees: string;
+  employeePhotos: string[];
+}
+
+const UserProfileWithAbout: React.FC = () => {
+  const [aboutData, setAboutData] = useState<AboutData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/about`
+        );
+        if (!res.ok) throw new Error("Fetch failed");
+        setAboutData(await res.json());
+      } catch {
+        console.error("Error fetching about data");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const defaultDescription =
+    "Better Women Better World is a startup dedicated to empowering women and girls from different backgrounds and cultures. At Better Women Better World, we believe in the power of collaboration and community to drive positive change. BW2CLUB, our flagship project, is a diverse digital platform and mobile app designed to support and connect women and girls from around the world.";
+
+  const items = [
+    {
+      icon: "/icons/globe.svg",
+      label: "Website",
+      value: aboutData?.website || "www.growwr.co",
+    },
+    {
+      icon: "/icons/phone.svg",
+      label: "Phone",
+      value: aboutData?.phone || "+15513090208",
+    },
+    {
+      icon: "/icons/users.svg",
+      label: "Employees",
+      value: aboutData?.employees || "10 Bonds are employees",
+    },
+  ];
+
+  const photos =
+    aboutData?.employeePhotos || [
+      "/avatars/avatar-2.png",
+      "/avatars/avatar-3.png",
+      "/avatars/avatar-4.png",
+    ];
+=======
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
@@ -29,6 +94,7 @@ const UserProfileWithAbout: React.FC = () => {
     "https://dashboard.codeparrot.ai/api/image/Z-zoFgz4-w8v6R80/avatar-3.png",
     "https://dashboard.codeparrot.ai/api/image/Z-zoFgz4-w8v6R80/avatar-4.png"
   ];
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
   return (
     <BaseProfile
@@ -36,6 +102,110 @@ const UserProfileWithAbout: React.FC = () => {
       role="Social Networking Platform"
       location="Mid, Delaware"
       establishedDate="Established on August 2, 2021"
+<<<<<<< HEAD
+      website="https://growwr.co"
+      avatarUrl="/avatars/avatar-10.png"
+      backgroundUrl="/images/background-10.png"
+    >
+      {({ renderTabs, activeTab }) => (
+        <div>
+          {/* tabs bar */}
+          {renderTabs()}
+
+          {/* only render when About tab is active */}
+          {activeTab === "About" && (
+            <motion.div
+              className="mt-4 bg-white rounded-lg border border-gray-200 p-6 md:p-8"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <motion.h2
+                className="text-xl font-medium text-gray-800 mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                Overview
+              </motion.h2>
+
+              {loading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-4 bg-gray-200 rounded animate-pulse w-full"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <motion.div
+                  className="space-y-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <motion.p
+                    className="text-sm text-gray-700 leading-relaxed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    {aboutData?.description || defaultDescription}
+                  </motion.p>
+
+                  {/* key/value items */}
+                  <div className="space-y-4">
+                    {items.map((it) => (
+                      <motion.div
+                        key={it.label}
+                        className="flex items-center gap-2"
+                        whileHover={{ x: 4 }}
+                      >
+                        <Image
+                          src={it.icon}
+                          alt={it.label}
+                          width={18}
+                          height={18}
+                        />
+                        <span className="text-sm font-medium text-gray-800">
+                          {it.label}:
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          {it.value}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* employee photos */}
+                  <motion.div
+                    className="flex -space-x-2 mt-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    {photos.map((src, idx) => (
+                      <motion.div
+                        key={idx}
+                        className="relative w-8 h-8 rounded-full border-2 border-white overflow-hidden"
+                        whileHover={{ y: -4, zIndex: 10 }}
+                        style={{ zIndex: photos.length - idx }}
+                      >
+                        <Image src={src} alt={`Emp ${idx + 1}`} fill className="object-cover" />
+                      </motion.div>
+                    ))}
+                    <div className="relative w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
+                      +{Math.max(0, 7 - photos.length)}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </div>
+      )}
+=======
       website="www.growwr.co"
       avatarUrl="https://dashboard.codeparrot.ai/api/image/Z-zoFgz4-w8v6R80/avatar.png"
       backgroundUrl="https://dashboard.codeparrot.ai/api/image/Z-zoFgz4-w8v6R80/rectangl.png"
@@ -159,8 +329,13 @@ const UserProfileWithAbout: React.FC = () => {
           />
         </motion.button>
       </motion.div>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     </BaseProfile>
   );
 };
 
+<<<<<<< HEAD
 export default UserProfileWithAbout;
+=======
+export default UserProfileWithAbout;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

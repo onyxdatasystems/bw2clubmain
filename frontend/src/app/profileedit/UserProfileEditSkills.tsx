@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+"use client";
+=======
 "use client "
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Skill } from './types';

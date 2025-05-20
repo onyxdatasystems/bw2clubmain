@@ -1,4 +1,38 @@
 import React from 'react';
+<<<<<<< HEAD
+import { Ad } from './store/types';
+import AdCard from './AdCard';
+
+interface AdsSectionProps {
+  ads: Ad[];
+  loading: boolean;
+  error?: string | null;
+}
+
+const AdsSection: React.FC<AdsSectionProps> = ({ ads, loading, error }) => {
+  return (
+    <div className="w-full max-w-xs p-4 bg-white rounded-lg shadow">
+      <h3 className="font-semibold text-lg mb-4">Sponsored</h3>
+
+      {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2].map(i => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 h-40 rounded-lg"></div>
+              <div className="mt-2 bg-gray-200 h-4 rounded w-3/4"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {ads.map(ad => (
+            <AdCard key={ad.id} ad={ad} />
+          ))}
+        </div>
+      )}
+=======
 import Image from 'next/image';
 
 const AdsSection: React.FC = () => {
@@ -62,9 +96,13 @@ const AdsSection: React.FC = () => {
           }}
         />
       </div>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     </div>
   );
 };
 
 export default AdsSection;
+<<<<<<< HEAD
+=======
 
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

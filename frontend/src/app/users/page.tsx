@@ -1,4 +1,122 @@
 "use client";
+<<<<<<< HEAD
+
+import React, { useState, useEffect } from 'react';
+import UserProfile from './user-profile';
+import {
+  fetchPosts,
+  fetchUserInfo,
+  fetchSupportBonds,
+  fetchPaymentHistory,
+  cheerPost,
+  sendFeedback
+} from './apiService';
+
+import { UserInfo, Post, PaymentHistory as PaymentHistoryType } from '../types/userProfileTypes';
+
+// 🔧 Import Navbar and SideBar (assuming you have them in the same folder or update the path accordingly)
+import Navbar from '../Navbar/page';
+import SideBar from '../SideBar/page';
+
+const UserProfilePage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('board');
+  const [user, setUser] = useState<UserInfo>({} as UserInfo);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [supportBonds, setSupportBonds] = useState<UserInfo[]>([]);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [userData, postsData, bondsData, paymentsData] = await Promise.all([
+          fetchUserInfo(),
+          fetchPosts(),
+          fetchSupportBonds(),
+          fetchPaymentHistory()
+        ]);
+
+        setUser(userData);
+        setPosts(postsData);
+        setSupportBonds(bondsData);
+        setPaymentHistory(paymentsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleCheer = async (postId: number) => {
+    const success = await cheerPost(postId);
+    if (success) {
+      setPosts(prev =>
+        prev.map(post =>
+          post.id === postId ? { ...post, cheers: post.cheers + 1 } : post
+        )
+      );
+    }
+  };
+
+  const handleFeedback = async (postId: number, message: string) => {
+    const success = await sendFeedback(postId, message);
+    if (success) {
+      setPosts(prev =>
+        prev.map(post =>
+          post.id === postId ? { ...post, feedbacks: post.feedbacks + 1 } : post
+        )
+      );
+    }
+  };
+
+  const handleSupport = () => {
+    console.log('Support button clicked');
+  };
+
+  const handleMessage = () => {
+    console.log('Message button clicked');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-screen w-full bg-gray-100 relative">
+      <Navbar />
+
+      <div className="flex flex-1 overflow-hidden">
+        <SideBar />
+
+        <main className="flex flex-col flex-1 overflow-y-auto p-2 md:p-4">
+          <UserProfile
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            user={user}
+            posts={posts}
+            supportBonds={supportBonds}
+            paymentHistory={paymentHistory}
+            onCheer={handleCheer}
+            onFeedback={handleFeedback}
+            onSupport={handleSupport}
+            onMessage={handleMessage}
+          />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default UserProfilePage;
+=======
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../Navbar/page";
@@ -96,3 +214,4 @@ const Layout: React.FC = () => {
 };
 
 export default Layout;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

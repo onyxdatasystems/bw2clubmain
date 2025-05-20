@@ -1,3 +1,64 @@
+<<<<<<< HEAD
+// components/InitiativesPage.tsx
+"use client";
+import React, { useEffect, useState } from "react";
+import Navbar from "../Navbar/page";
+import Sidebar from "../SideBar/page";
+import { InitiativeDetails } from "./InitiativeDetails";
+import { Advertisement } from "./Advertisement";
+
+const InitiativesPage: React.FC = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-200">
+      {/* Top navbar */}
+      <Navbar />
+
+      <div className="flex flex-1">
+        {/* Sidebar (mobile + desktop handled internally) */}
+        <Sidebar />
+
+        {/* Main content: offset by sidebar's width on md+ */}
+        <main className="flex-1 p-4 md:ml-64 overflow-y-auto">
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+            {/* Initiative details (takes full width on mobile, 60% on large screens) */}
+            <section className="w-full lg:w-3/5 p-4 bg-white rounded-lg shadow">
+              <InitiativeDetails />
+            </section>
+
+            {/* Advertisement sidebar (hidden on mobile, 20% on large screens) */}
+            {!isMobile && (
+              <aside className="lg:w-1/5 p-4">
+                <Advertisement />
+              </aside>
+            )}
+          </div>
+
+          {/* Mobile-only advertisement at the bottom */}
+          {isMobile && (
+            <div className="mt-6 p-4">
+              <Advertisement />
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default InitiativesPage;
+=======
 'use client';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -108,3 +169,4 @@ export class InitiativesPage extends React.Component<{}, InitiativesPageState> {
 }
 
 export default InitiativesPage;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

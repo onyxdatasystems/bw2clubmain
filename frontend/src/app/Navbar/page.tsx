@@ -1,3 +1,22 @@
+<<<<<<< HEAD
+import React from 'react'
+import Navbar from "./Navbar"
+import { motion } from 'framer-motion';
+
+const page = () => {
+  return (
+    <motion.div
+     className="flex flex-col w-full min-h-screen bg-gray-50"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.5 }}>
+      <Navbar />
+    </motion.div>
+  )
+}
+
+export default page
+=======
 // src/components/Navbar.tsx
 'use client';
 import React, { useState } from 'react';
@@ -153,3 +172,4 @@ const iconVariants = {
       </>
     );
   }
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

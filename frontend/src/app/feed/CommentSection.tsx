@@ -1,3 +1,51 @@
+<<<<<<< HEAD
+import { Comment } from './types/page';
+import { useUserStore } from './store/userStore';
+import { usePostStore } from './store/postStore';
+import { useState } from 'react';
+
+export default function CommentSection({ postId, comments }: { postId: number; comments: Comment[] }) {
+  const [content, setContent] = useState('');
+  const { currentUser } = useUserStore();
+  const { posts, setPosts } = usePostStore();
+
+  const addComment = () => {
+    if (!content) return;
+    const newComment: Comment = {
+      id: Date.now(),
+      postId,
+      content,
+      createdAt: new Date().toISOString(),
+      user: currentUser!,
+    };
+    const updatedPosts = posts.map(p =>
+      p.id === postId ? { ...p, comments: [...p.comments, newComment] } : p
+    );
+    setPosts(updatedPosts);
+    setContent('');
+  };
+
+  return (
+    <div className="mt-4">
+      <input
+        type="text"
+        placeholder="Write a comment..."
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full p-2 border rounded"
+      />
+      <button onClick={addComment} className="mt-2 text-sm text-blue-600">Post</button>
+      <div className="mt-2 space-y-2">
+        {comments.map((c) => (
+          <div key={c.id} className="text-sm">
+            <strong>{c.user.name}</strong>: {c.content}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+=======
 "use client"
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -78,3 +126,4 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 };
 
 export default CommentSection;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

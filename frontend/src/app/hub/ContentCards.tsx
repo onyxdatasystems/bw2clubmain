@@ -1,19 +1,83 @@
 // src/components/ContentCards.tsx
 'use client';
+<<<<<<< HEAD
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { UserService, CompanyService } from './services/ApiService';
+import { User, Company } from './types/api';
+=======
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Animations } from '../../config/Config';
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
 interface CardData {
   id: number;
   image: string;
+<<<<<<< HEAD
+  name: string;
+  description: string;
+  type: 'user' | 'company';
+=======
   companyName: string;
   description: string;
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 }
 
 interface ContentCardsProps {
   className?: string;
+<<<<<<< HEAD
+  activeTab: 'people' | 'companies';
+}
+
+const ContentCards: React.FC<ContentCardsProps> = ({ className = '', activeTab }) => {
+  const [cards, setCards] = useState<CardData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        if (activeTab === 'people') {
+          const userService = new UserService();
+          const response = await userService.getUsers();
+          const userCards = response.data.map((user: User) => ({
+            id: user.id,
+            image: user.avatar || '/default-user.png',
+            name: user.name,
+            description: user.bio || 'No bio available',
+            type: 'user' as const
+          }));
+          setCards(userCards);
+        } else {
+          const companyService = new CompanyService();
+          const response = await companyService.getCompanies();
+          const companyCards = response.data.map((company: Company) => ({
+            id: company.id,
+            image: company.logo || '/default-company.png',
+            name: company.name,
+            description: company.description || 'No description available',
+            type: 'company' as const
+          }));
+          setCards(companyCards);
+        }
+      } catch (err) {
+        setError('Failed to load data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [activeTab]);
+
+=======
 }
 
 const defaultCards: CardData[] = [
@@ -21,6 +85,7 @@ const defaultCards: CardData[] = [
 ];
 
 const ContentCards: React.FC<ContentCardsProps> = ({ className = '' }) => {
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
@@ -39,11 +104,22 @@ const ContentCards: React.FC<ContentCardsProps> = ({ className = '' }) => {
     }
   };
 
+<<<<<<< HEAD
+  if (loading) return <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 ${className}`}>Loading...</div>;
+  if (error) return <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 ${className}`}>{error}</div>;
+
+  return (
+    <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 ${className}`}>
+      {cards.map((card, i) => (
+        <motion.div
+          key={`${card.type}-${card.id}`}
+=======
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 ${className}`}>
       {defaultCards.map((card, i) => (
         <motion.div
           key={card.id}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
           custom={i}
           initial="hidden"
           animate="visible"
@@ -54,18 +130,32 @@ const ContentCards: React.FC<ContentCardsProps> = ({ className = '' }) => {
           <div className="absolute top-0 -mt-10">
             <Image
               src={card.image}
+<<<<<<< HEAD
+              alt={card.name}
+              width={81}
+              height={81}
+              className="rounded-full"
+              priority={i < 3}
+=======
               alt={card.companyName}
               width={81}
               height={81}
               className="rounded-full"
               priority={i < 3} // Only prioritize first few images
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             />
           </div>
           <div className="mt-16 flex flex-col items-center">
             <h3 className="text-[14px] text-[#3a3a3a] font-inter text-center leading-[140%] tracking-[-0.41px]">
+<<<<<<< HEAD
+              {card.name}
+            </h3>
+            <p className="mt-2 text-[11px] text-[#636878] font-inter text-center leading-[140%] tracking-[-0.41px] px-4 line-clamp-2">
+=======
               {card.companyName}
             </h3>
             <p className="mt-2 text-[11px] text-[#636878] font-inter text-center leading-[140%] tracking-[-0.41px] px-4">
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
               {card.description}
             </p>
             <motion.button 

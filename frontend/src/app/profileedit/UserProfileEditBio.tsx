@@ -1,3 +1,146 @@
+<<<<<<< HEAD
+// components/UserProfileEditBio.tsx
+'use client';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { api } from '../lib/api';
+
+import { UserProfile } from './types';
+
+
+interface Props {
+  onEditComplete?: () => void;
+}
+
+const UserProfileEditBio = ({ onEditComplete }: Props) => {
+  const [formData, setFormData] = useState<UserProfile>({
+    firstName: '',
+    lastName: '',
+    bio: '',
+    birthDate: '',
+    language: 'English',
+    city: '',
+    country: '',
+    relationship: 'Single'
+  });
+  const [loading, setLoading] = useState(true);
+        (async () => {
+          const response = await api.fetchProfile();
+          if (response.success && response.data) {
+            const userProfile = response.data as unknown as UserProfile;
+            setFormData({
+              firstName: userProfile.firstName || '',
+              lastName: userProfile.lastName || '',
+              bio: userProfile.bio || '',
+              birthDate: userProfile.birthDate || '',
+              language: userProfile.language || 'English',
+              city: userProfile.city || '',
+              country: userProfile.country || '',
+              relationship: userProfile.relationship || 'Single'
+            });
+          }
+        })();
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const response = await api.fetchProfile();
+        if (response.success && response.data) {
+          const userProfile = response.data as unknown as UserProfile;
+          setFormData({
+            firstName: userProfile.firstName || '',
+            lastName: userProfile.lastName || '',
+            bio: userProfile.bio || '',
+            birthDate: userProfile.birthDate || '',
+            language: userProfile.language || 'English',
+            city: userProfile.city || '',
+            country: userProfile.country || '',
+            relationship: userProfile.relationship || 'Single'
+          });
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const response = await api.updateProfile({
+      name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.bio, // Assuming 'bio' is used as an email placeholder
+      password: formData.birthDate // Assuming 'birthDate' is used as a password placeholder
+    });
+    if (response.success) onEditComplete?.();
+  };
+
+  if (loading) return <div className="p-6 text-gray-500">Loading profile...</div>;
+
+  return (
+    <motion.form
+      onSubmit={handleSubmit}
+      className="p-4 md:p-6 bg-white rounded-lg shadow-sm"
+    >
+      <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6">Basic Information</h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <label className="block text-sm md:text-base font-medium text-gray-700">First Name</label>
+            <input
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <label className="block text-sm md:text-base font-medium text-gray-700">Birth Date</label>
+            <input
+              type="date"
+              name="birthDate"
+              value={formData.birthDate}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <label className="block text-sm md:text-base font-medium text-gray-700">City</label>
+            <input
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+          </motion.div>
+        </div>
+
+        <div className="space-y-4">
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <label className="block text-sm md:text-base font-medium text-gray-700">Last Name</label>
+            <input
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <label className="block text-sm md:text-base font-medium text-gray-700">Language</label>
+            <select
+              name="language"
+              value={formData.language}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg"
+=======
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UserProfile } from './types';
@@ -98,6 +241,7 @@ class UserProfileEditBio extends React.Component<Props> {
               value={this.state.language}
               onChange={this.handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
             >
               <option value="English">English</option>
               <option value="Spanish">Spanish</option>
@@ -105,6 +249,41 @@ class UserProfileEditBio extends React.Component<Props> {
             </select>
           </motion.div>
 
+<<<<<<< HEAD
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <label className="block text-sm md:text-base font-medium text-gray-700">Country</label>
+            <input
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="mt-6 md:mt-8 flex flex-col md:flex-row gap-3 justify-end">
+        <motion.button
+          type="button"
+          onClick={onEditComplete}
+          className="px-4 py-2 border rounded-full text-gray-700"
+          whileHover={{ scale: 1.05 }}
+        >
+          Cancel
+        </motion.button>
+        
+        <motion.button
+          type="submit"
+          className="px-4 py-2 bg-purple-600 text-white rounded-full"
+          whileHover={{ scale: 1.05 }}
+        >
+          Save Changes
+        </motion.button>
+      </div>
+    </motion.form>
+  );
+};
+=======
           {/* Location */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <motion.div whileHover={{ scale: 1.01 }}>
@@ -171,5 +350,6 @@ class UserProfileEditBio extends React.Component<Props> {
     );
   }
 }
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
 export default UserProfileEditBio;

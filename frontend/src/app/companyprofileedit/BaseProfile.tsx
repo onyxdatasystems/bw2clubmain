@@ -1,3 +1,104 @@
+<<<<<<< HEAD
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
+
+type BaseProfileProps = {
+  name: string;
+  role: string;
+  location: string;
+  establishedDate: string;
+  website: string;
+  avatarUrl: string;
+  backgroundUrl: string;
+  children: (args: {
+    renderTabs: () => React.ReactNode;
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
+  }) => React.ReactNode;
+};
+
+const BaseProfile: React.FC<BaseProfileProps> = ({
+  name,
+  role,
+  location,
+  establishedDate,
+  website,
+  avatarUrl,
+  backgroundUrl,
+  children,
+}) => {
+  const tabs = ["About", "Board", "Gallery", "Circle Members"];
+  const [activeTab, setActiveTab] = useState<string>(tabs[0]);
+
+  const renderTabs = () => (
+    <div className="mt-4 flex gap-4 overflow-x-auto border-b border-gray-200 px-4 py-2">
+      {tabs.map((tab) => (
+        <button
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`whitespace-nowrap pb-2 text-sm font-medium ${
+            activeTab === tab
+              ? "border-b-2 border-indigo-600 text-indigo-600"
+              : "text-gray-500 hover:text-indigo-600"
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+      {/* — Header */}
+      <div className="relative h-32 w-full">
+        <Image
+          src={backgroundUrl}
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+      <div className="relative -mt-12 flex items-center px-6">
+        <div className="h-24 w-24 rounded-full border-4 border-white overflow-hidden">
+          <Image
+            src={avatarUrl}
+            alt="Avatar"
+            width={96}
+            height={96}
+            className="object-cover"
+            priority
+          />
+        </div>
+        <div className="ml-4">
+          <h1 className="text-xl font-semibold">{name}</h1>
+          <p className="text-sm text-gray-600">{role}</p>
+          <p className="text-sm text-gray-500">{location}</p>
+        </div>
+      </div>
+
+      <div className="px-6 pb-4">
+        <p className="text-sm text-gray-500">{establishedDate}</p>
+        <a
+          href={website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-indigo-600 hover:underline"
+        >
+          {website}
+        </a>
+      </div>
+
+      {/* — Tabs + Content */}
+      {children({ renderTabs, activeTab, setActiveTab })}
+    </div>
+  );
+};
+
+export default BaseProfile;
+=======
 // components/BaseProfile.tsx
 "use client";
 import { motion } from 'framer-motion';
@@ -194,3 +295,4 @@ export default class BaseProfile extends React.Component<ProfileProps> {
     );
   }
 }
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272

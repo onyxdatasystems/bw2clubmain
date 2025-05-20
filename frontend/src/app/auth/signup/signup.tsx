@@ -1,10 +1,17 @@
 "use client";
+<<<<<<< HEAD
+=======
 
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+<<<<<<< HEAD
+import { registerUser, verifyEmail, resendVerification } from '../../lib/api';
+=======
 import {error} from "next/dist/build/output/log";
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 
 // OOP Class for Animations
 class SignUpAnimations {
@@ -59,7 +66,10 @@ class SignUpAnimations {
   };
 }
 
+<<<<<<< HEAD
+=======
 // OOP Class for Layout
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 class SignUpLayout {
   static mainContainer = "flex flex-col md:flex-row w-full min-h-screen bg-gradient-to-br from-gray-100 to-gray-200";
   static imageSection = "flex-1 relative p-8 flex flex-col justify-center items-center";
@@ -73,7 +83,10 @@ class SignUpLayout {
   static errorMessage = "w-full max-w-[424px] mb-4 p-4 bg-red-100 text-red-700 rounded-lg";
 }
 
+<<<<<<< HEAD
+=======
 // Content Class
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
 class SignUpContent {
   static footerLinks = [
     { text: "Privacy Policy", href: "/privacy" },
@@ -88,15 +101,22 @@ const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+<<<<<<< HEAD
+    confirmPassword: '',
+=======
     confirmed: '',
     username: '',
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
     fullName: ''
   });
   const [step, setStep] = useState<'form' | 'confirm' | 'complete'>('form');
   const [confirmationToken, setConfirmationToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+<<<<<<< HEAD
+=======
   // Handle URL parameters for email confirmation
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -120,6 +140,18 @@ const SignUp: React.FC = () => {
     setErrorMessage('');
     
     try {
+<<<<<<< HEAD
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+
+      await registerUser({
+        email: formData.email,
+        password: formData.password,
+        name: formData.fullName
+      });
+
+=======
       console.log('Attempting to fetch:', formData.password);
       if (formData.password !== formData.confirmed) {
         setErrorMessage('The passwords do not match.');
@@ -147,11 +179,16 @@ const SignUp: React.FC = () => {
         );
       }
   
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       setIsLoading(false);
       setStep('confirm');
     } catch (error) {
       console.error('Registration error:', error);
+<<<<<<< HEAD
+      setErrorMessage(error instanceof Error ? error.message : 'Registration failed. Please try again.');
+=======
       setErrorMessage(error instanceof Error ? error.message : 'Registration failed. please try again.');
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       setIsLoading(false);
     }
   };
@@ -161,6 +198,9 @@ const SignUp: React.FC = () => {
     setErrorMessage('');
     
     try {
+<<<<<<< HEAD
+      await verifyEmail(token);
+=======
       const response = await fetch('/api/auth/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,11 +213,16 @@ const SignUp: React.FC = () => {
         throw new Error(data.message || 'Confirmation failed');
       }
 
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       setIsLoading(false);
       setStep('complete');
     } catch (error) {
       console.error('Confirmation error:', error);
+<<<<<<< HEAD
+      setErrorMessage(error instanceof Error ? error.message : 'Email verification failed');
+=======
       setErrorMessage(error instanceof Error ? error.message : 'Confirmation failed');
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       setIsLoading(false);
     }
   }, []);
@@ -193,6 +238,13 @@ const SignUp: React.FC = () => {
     setErrorMessage('');
     
     try {
+<<<<<<< HEAD
+      await resendVerification(formData.email);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Resend error:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to resend verification email');
+=======
       const response = await fetch('/api/auth/resend-confirmation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -209,12 +261,17 @@ const SignUp: React.FC = () => {
     } catch (error) {
       console.error('Resend error:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to resend confirmation');
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
       setIsLoading(false);
     }
   };
 
   const handleComplete = () => {
+<<<<<<< HEAD
+    window.location.href = '/auth/signin';
+=======
     window.location.href = '/feed';
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
   };
 
   return (
@@ -254,7 +311,11 @@ const SignUp: React.FC = () => {
             Transform Workplaces
           </motion.h2>
           <p className="text-gray-600 leading-relaxed">
+<<<<<<< HEAD
+            Welcome to BW2CLUB, a global community that empowers women and girls and partners with companies to create inclusive spaces.
+=======
             Welcome to BW2Club, a global community that empowers women and girls and partners with companies to create inclusive spaces.
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
           </p>
         </motion.div>
       </motion.div>
@@ -304,6 +365,23 @@ const SignUp: React.FC = () => {
               </motion.h1>
 
               <motion.form
+<<<<<<< HEAD
+                onSubmit={handleSubmit}
+                className="space-y-6"
+                variants={SignUpAnimations.container}
+                initial="hidden"
+                animate="visible"
+              >
+                <motion.div variants={SignUpAnimations.item}>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className={SignUpLayout.inputField}
+                    placeholder="Full Name"
+                    required
+=======
                   onSubmit={handleSubmit}
                   className="space-y-6"
                   variants={SignUpAnimations.container}
@@ -320,11 +398,46 @@ const SignUp: React.FC = () => {
                       className={SignUpLayout.inputField}
                       placeholder="Full Name"
                       required
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                   />
                 </motion.div>
 
                 <motion.div variants={SignUpAnimations.item}>
                   <input
+<<<<<<< HEAD
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={SignUpLayout.inputField}
+                    placeholder="Email address"
+                    required
+                  />
+                </motion.div>
+
+                <motion.div className="relative" variants={SignUpAnimations.item}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={SignUpLayout.inputField}
+                    placeholder="Password"
+                    required
+                    minLength={8}
+                  />
+                  <motion.button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Image
+                      src="https://dashboard.codeparrot.ai/api/image/Z-o9pwz4-w8v6Rqn/eye-1-6.png"
+                      alt="Toggle password"
+                      width={24}
+                      height={24}
+=======
                       type="email"
                       name="email"
                       value={formData.email}
@@ -368,12 +481,35 @@ const SignUp: React.FC = () => {
                         alt="Toggle password"
                         width={24}
                         height={24}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                     />
                   </motion.button>
                 </motion.div>
 
                 <motion.div className="relative" variants={SignUpAnimations.item}>
                   <input
+<<<<<<< HEAD
+                    type={showPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={SignUpLayout.inputField}
+                    placeholder="Confirm Password"
+                    required
+                    minLength={8}
+                  />
+                  <motion.button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Image
+                      src="https://dashboard.codeparrot.ai/api/image/Z-o9pwz4-w8v6Rqn/eye-1-6.png"
+                      alt="Toggle password"
+                      width={24}
+                      height={24}
+=======
                       type={showPassword ? "text" : "confirmed"}
                       name="confirmed"
                       value={formData.confirmed}
@@ -393,12 +529,27 @@ const SignUp: React.FC = () => {
                         alt="Toggle password"
                         width={24}
                         height={24}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                     />
                   </motion.button>
                 </motion.div>
 
                 <motion.div variants={SignUpAnimations.item}>
                   <motion.button
+<<<<<<< HEAD
+                    type="submit"
+                    disabled={isLoading}
+                    className={SignUpLayout.submitButton}
+                    whileHover={SignUpAnimations.buttonHover}
+                    whileTap={SignUpAnimations.buttonTap}
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center justify-center">
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"
+=======
                       type="submit"
                       disabled={isLoading}
                       className={SignUpLayout.submitButton}
@@ -411,11 +562,16 @@ const SignUp: React.FC = () => {
                             animate={{rotate: 360}}
                             transition={{duration: 1, repeat: Infinity, ease: "linear"}}
                             className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                         />
                         Creating account...
                       </span>
                     ) : (
+<<<<<<< HEAD
+                      'Sign Up'
+=======
                         'Sign Up'
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                     )}
                   </motion.button>
                 </motion.div>
@@ -424,6 +580,32 @@ const SignUp: React.FC = () => {
           )}
 
           {step === 'confirm' && (
+<<<<<<< HEAD
+            <motion.div
+              key="confirm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full max-w-[424px] text-center"
+            >
+              <motion.h1 className="text-4xl md:text-5xl font-bold text-[#6767b7] mb-8 md:mb-12">
+                {isLoading ? 'Verifying Email...' : 'Confirm Email'}
+              </motion.h1>
+
+              {!isLoading && (
+                <motion.div className="space-y-6">
+                  <p className="text-gray-600 mb-6">
+                    {confirmationToken
+                      ? 'Verifying your email...'
+                      : `We've sent a confirmation link to ${formData.email}. Please check your inbox.`}
+                  </p>
+
+                  {!confirmationToken && (
+                    <>
+                      <motion.button
+                        onClick={handleResendConfirmation}
+                        disabled={isLoading}
+=======
               <motion.div
                   key="confirm"
                   initial={{opacity: 0}}
@@ -448,6 +630,7 @@ const SignUp: React.FC = () => {
                             <motion.button
                                 onClick={handleResendConfirmation}
                                 disabled={isLoading}
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                         className={SignUpLayout.submitButton}
                         whileHover={SignUpAnimations.buttonHover}
                         whileTap={SignUpAnimations.buttonTap}
@@ -457,12 +640,18 @@ const SignUp: React.FC = () => {
                       
                       <p className="text-sm text-gray-500">
                         Already confirmed?{' '}
+<<<<<<< HEAD
+                        <Link href="/auth/signin" className="text-[#7171c1] hover:underline">
+                          Log in here
+                        </Link>
+=======
                         <button 
                           onClick={() => confirmationToken && handleConfirm(confirmationToken)}
                           className="text-[#7171c1] hover:underline"
                         >
                           Continue to dashboard
                         </button>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                       </p>
                     </>
                   )}
@@ -480,7 +669,11 @@ const SignUp: React.FC = () => {
               className="w-full max-w-[424px] text-center"
             >
               <motion.h1 className="text-4xl md:text-5xl font-bold text-[#6767b7] mb-8 md:mb-12">
+<<<<<<< HEAD
+                Welcome!
+=======
                 Welcome, {formData.username}!
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
               </motion.h1>
 
               <motion.div className="space-y-6">
@@ -496,7 +689,11 @@ const SignUp: React.FC = () => {
                     </svg>
                   </motion.div>
                   <p className="text-gray-600">
+<<<<<<< HEAD
+                    Your account has been successfully created and verified!
+=======
                     Your account has been successfully created! You can now access all the features of our platform.
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                   </p>
                 </div>
 
@@ -506,7 +703,11 @@ const SignUp: React.FC = () => {
                   whileHover={SignUpAnimations.buttonHover}
                   whileTap={SignUpAnimations.buttonTap}
                 >
+<<<<<<< HEAD
+                  Continue to Login
+=======
                   Continue to Dashboard
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                 </motion.button>
               </motion.div>
             </motion.div>
@@ -522,11 +723,24 @@ const SignUp: React.FC = () => {
           >
             <p className={SignUpLayout.loginLink}>
               Already have an account?{' '}
+<<<<<<< HEAD
+              <Link href="/auth/signin" className="font-semibold hover:underline">
+=======
               <Link href="/auth/signin" className={SignUpLayout.loginLink}>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
                 Log in
               </Link>
             </p>
             <div className={SignUpLayout.footerLinks}>
+<<<<<<< HEAD
+              {SignUpContent.footerLinks.map((link, index) => (
+                <React.Fragment key={link.text}>
+                  {index > 0 && <span>•</span>}
+                  <Link href={link.href} className="hover:underline hover:text-[#7171c1]">
+                    {link.text}
+                  </Link>
+                </React.Fragment>
+=======
               {SignUpContent.footerLinks.map((link) => (
                 <Link 
                   key={link.text}
@@ -535,6 +749,7 @@ const SignUp: React.FC = () => {
                 >
                   {link.text}
                 </Link>
+>>>>>>> 492fe3069fa30d915b761271c537d20db9136272
               ))}
             </div>
           </motion.div>
